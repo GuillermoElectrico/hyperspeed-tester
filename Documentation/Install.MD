@@ -96,7 +96,6 @@ On top of this the only other package needed is RSSH for the RCP copies between 
 The following scripts are needed on the IPerf log server:
 
 * json_server_side.py
-* rsync_copy.py
 * switch_information_check.py
 
 To install: 
