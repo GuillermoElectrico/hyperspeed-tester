@@ -68,10 +68,6 @@ sleep 2
 echo *******Installing OpenSSH Server********
 apt-get install openssh-server -y
 sleep 2
-echo *******Setting Cron to execute on startup for script execution********
-(crontab -l 2>/dev/null; echo "@reboot python /home/iperf-scripts/button_script.py") | crontab -
-(crontab -l 2>/dev/null; echo "@reboot python /home/iperf-scripts/boot.py") | crontab -
-(crontab -l 2>/dev/null; echo "@reboot sleep 30; python /home/iperf-scripts/execute_test_final.py") | crontab -
 echo ******Copying scripts*******
 wget -O /home/iperf-scripts/execute_test_final.py https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Client-Script/execute_test_final.py
 wget -O /home/iperf-scripts/boot.py https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Client-Script/boot.py
@@ -79,5 +75,9 @@ wget -O /home/iperf-scripts/button_script.py https://raw.githubusercontent.com/G
 wget -O /home/iperf-scripts/button_shell_script.sh https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Client-Script/button_shell_script.sh
 chmod +x /home/iperf-scripts/button_shell_script.sh
 sleep 2
+echo *******Setting Cron to execute on startup for script execution********
+(crontab -l 2>/dev/null; echo "@reboot python /home/iperf-scripts/button_script.py") | crontab -
+(crontab -l 2>/dev/null; echo "@reboot python /home/iperf-scripts/boot.py") | crontab -
+(crontab -l 2>/dev/null; echo "@reboot sleep 30; python /home/iperf-scripts/execute_test_final.py") | crontab -
 echo *******Setup complete*******
 sleep 2
