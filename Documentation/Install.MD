@@ -16,7 +16,7 @@ These can be changed freely but will be created in the install script.
 
 To install with the script go to the 'odroid-install_script.sh' in Installation-Scripts
 
-	1. Copy the script to odroid board - wget https://raw.githubusercontent.com/LukeCSmith0/hyperspeed-tester/master/Installation-Scripts/odroid-install_script.sh
+	1. Copy the script to odroid board - wget https://raw.githubusercontent.comGuillermoElectrico/hyperspeed-tester/master/Installation-Scripts/odroid-install_script.sh
 
 	2. Chmod file so that you can run it 'chmod u+x odroid-install_script.sh'
 
@@ -36,7 +36,7 @@ The IPerf server has a relatively small footprint in terms of required packages.
 
 To install with the script go to the 'iperf-server-install-script.sh' in Installation-Scripts
 
-	1. Copy the script to server - https://raw.githubusercontent.com/LukeCSmith0/hyperspeed-tester/master/Installation-Scripts/iperf-server-install-script.sh
+	1. Copy the script to server - wget https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Installation-Scripts/iperf-server-install-script.sh
 
 	2. Chmod file so that you can run it 'chmod u+x iperf-server-install-script.sh'
 
@@ -101,7 +101,7 @@ The following scripts are needed on the IPerf log server:
 
 To install: 
 
-	1. Copy the script to server - https://raw.githubusercontent.com/LukeCSmith0/hyperspeed-tester/master/Installation-Scripts/iperf-log-server-install-script.sh
+	1. Copy the script to server - wget https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Installation-Scripts/iperf-log-server-install-script.sh
 
 	2. Chmod file so that you can run it 'chmod u+x iperf-log-server-install-script.sh'
 
