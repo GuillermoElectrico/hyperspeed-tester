@@ -1,6 +1,10 @@
 echo *******Updating Repositories*******
 sleep 2
 apt-get update
+echo *******Installing PIP for Flask Installation*******
+sleep 2
+apt-get install python-pip -y
+pip install --upgrade pip
 echo *******Installing RSSH for RCP Pulls*******
 sleep 2
 apt-get install rssh -y
