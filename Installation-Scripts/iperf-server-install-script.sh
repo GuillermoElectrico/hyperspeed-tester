@@ -16,7 +16,7 @@ sleep 2
 pip install flask
 echo *******Installing WSGI for the Flask application*******
 sleep 2
-apt-get install libapache2-mod-wsgi -y
+apt-get install apache2 libapache2-mod-wsgi -y
 echo *******Creating the required directories for scripts and pulling scripts*******
 sleep 2
 mkdir /home/whats-my-ip
