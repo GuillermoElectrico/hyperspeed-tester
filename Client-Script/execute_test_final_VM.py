@@ -181,9 +181,9 @@ def edit_json(hashed_file_name, gateway_mac) :
         if "timed_out" in ex:
             ookla_results["download"] = ""
             ookla_results["upload"] = ""
-        else:
-            ookla_results["download"] = ""
-            ookla_results["upload"] = ""
+        #else:
+        #    ookla_results["download"] = ""
+        #    ookla_results["upload"] = ""
     finally:
         signal.alarm(0)
      
