@@ -11,6 +11,7 @@ apt-get install rssh -y
 echo *******Installing PIP for Flask Installation*******
 sleep 2
 apt-get install python-pip -y
+pip install --upgrade pip
 echo *******Installing Flask*******
 sleep 2
 pip install flask
