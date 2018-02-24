@@ -20,9 +20,12 @@ apt-get install libapache2-mod-wsgi -y
 echo *******Creating the required directories for scripts and pulling scripts*******
 sleep 2
 mkdir /home/whats-my-ip
-wget -O /home/whats_my_ip.py https://raw.githubusercontent.com/LukeCSmith0/hyperspeed-tester/master/Server-Script/whats-my-ip/whats_my_ip.py
-wget -O /home/whats-my-ip.wsgi https://raw.githubusercontent.com/LukeCSmith0/hyperspeed-tester/master/Server-Script/whats-my-ip.wsgi
-wget -O /etc/apache2/sites-available/whats-my-ip.conf https://raw.githubusercontent.com/LukeCSmith0/hyperspeed-tester/master/Server-Script/whats-my-ip.conf
+wget -O /home/whats-my-ip/whats_my_ip.py https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Server-Script/whats-my-ip/whats_my_ip.py
+wget -O /home/whats-my-ip/whats-my-ip.wsgi https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Server-Script/whats-my-ip.wsgi
+wget -O /etc/apache2/sites-available/whats-my-ip.conf https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Server-Script/whats-my-ip.conf
+echo *******Setting Cron to execute on startup for script execution********
+(crontab -l 2>/dev/null; echo "* * * * * iperf3 -s -D") | crontab -
+(crontab -l 2>/dev/null; echo "reboot python /home/whats-my-ip/whats-my-ip.py") | crontab -
 echo *******Registering App with Apache*******
 sleep 2
 a2ensite whats-my-ip
