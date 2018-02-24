@@ -41,8 +41,7 @@ def timeout_handler(num, stack):
 ##Function performs a ping test against the server to ensure that it is accessible
 def pingHome():
     ScreenOutput('Ping Test', 'Executing...')
-    time.sleep(1)
-    ##Perform an OS command to execute the ping test
+    time.sleep(1)    ##Perform an OS command to execute the ping test
     response = os.system("ping -c 2 " + hostname)
     status = ""
 
@@ -59,7 +58,7 @@ def pingHome():
 
 ##Function performs a test against the FTP socket to ensure the FTP service is accessible on the server
 def testSCPSocket() :
-    #check ftp is running on the host by established a socket on port 21. Set the timeout for the socket to 3 seconds
+    #check ftp is running on the host by established a socket on port 22. Set the timeout for the socket to 3 seconds
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(3)
     result = sock.connect_ex((hostname, 22))
