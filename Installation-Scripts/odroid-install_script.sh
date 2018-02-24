@@ -8,6 +8,7 @@ apt-get install iperf3 -y
 echo *******Installing PIP*******
 sleep 2
 apt-get install python-pip -y
+pip install --upgrade pip
 echo *******Installing required files for paramiko*******
 sleep 2
 apt-get install build-essential libssl-dev libffi-dev python3-dev
