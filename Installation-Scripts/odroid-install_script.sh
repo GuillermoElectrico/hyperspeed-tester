@@ -8,15 +8,24 @@ apt-get install iperf3 -y
 echo *******Installing PIP*******
 sleep 2
 apt-get install python-pip -y
-echo *******Installing PIP*******
+echo *******Installing required files for paramiko*******
+sleep 2
+apt-get install build-essential libssl-dev libffi-dev python3-dev
+echo *******Installing paramiko*******
 sleep 2
 pip install paramiko
-echo *******Installing SCP*******
-sleep 2
-pip install scp
 echo *******Installing required files for SCP*******
 sleep 2
 apt-get install libffi6 libffi-dev -y
+echo *******Installing SCP*******
+sleep 2
+pip install scp
+echo *******Installing SCPClient*******
+sleep 2
+pip install SCPClient
+echo *******Installing SSHClient*******
+sleep 2
+pip install SSHClient
 echo *******Installing ARP module for Python*******
 sleep 2
 pip install python_arptable
@@ -64,10 +73,10 @@ echo *******Setting Cron to execute on startup for script execution********
 (crontab -l 2>/dev/null; echo "@reboot python /home/iperf-scripts/boot.py") | crontab -
 (crontab -l 2>/dev/null; echo "@reboot sleep 30; python /home/iperf-scripts/execute_test_final.py") | crontab -
 echo ******Copying scripts*******
-wget -O /home/iperf-scripts/execute_test_final.py https://raw.githubusercontent.com/LukeCSmith0/hyperspeed-tester/master/Client-Script/execute_test_final.py
-wget -O /home/iperf-scripts/boot.py https://raw.githubusercontent.com/LukeCSmith0/hyperspeed-tester/master/Client-Script/boot.py
-wget -O /home/iperf-scripts/button_script.py https://raw.githubusercontent.com/LukeCSmith0/hyperspeed-tester/master/Client-Script/button_script.py
-wget -O /home/iperf-scripts/button_shell_script.sh https://raw.githubusercontent.com/LukeCSmith0/hyperspeed-tester/master/Client-Script/button_shell_script.sh
+wget -O /home/iperf-scripts/execute_test_final.py https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Client-Script/execute_test_final.py
+wget -O /home/iperf-scripts/boot.py https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Client-Script/boot.py
+wget -O /home/iperf-scripts/button_script.py https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Client-Script/button_script.py
+wget -O /home/iperf-scripts/button_shell_script.sh https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Client-Script/button_shell_script.sh
 chmod +x /home/iperf-scripts/button_shell_script.sh
 sleep 2
 echo *******Setup complete*******
