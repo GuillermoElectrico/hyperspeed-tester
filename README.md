@@ -1,4 +1,4 @@
-# Odroid C2 Line Tester
+# Odroid C2 Line Tester 
 This is a repository for a portable line tester project. All relevant information can be found in the Documentation folder.
 
 **What we are... Networking university students, What we are not... Coders!** We know that this isn't the best in terms of code quality but if you can/want to improve the code let us know!
@@ -20,7 +20,7 @@ Requirements:
   
   In terms of how it all fits together the image below should hopefully show you:
   
-  ![alt text](https://github.com/LukeCSmith0/hyperspeed-tester/blob/master/Documentation/Pictures/Proposal.jpg "Proposal")
+  ![alt text](https://github.com/GuillermoElectrico/hyperspeed-tester/blob/master/Documentation/Pictures/Proposal.jpg "Proposal")
 
 1. The user plugs the odroid board into there ISP's provided router
 2. A speed test auto-magicaly runs
@@ -41,12 +41,12 @@ Requirements:
 
 Below you can see the odroid performing the test 
 
-  ![alt text](https://github.com/LukeCSmith0/hyperspeed-tester/blob/master/Documentation/Pictures/Tester.gif "")
+  ![alt text](https://github.com/GuillermoElectrico/hyperspeed-tester/blob/master/Documentation/Pictures/Tester.gif "")
 
-  ![alt text](https://github.com/LukeCSmith0/hyperspeed-tester/blob/master/Documentation/Pictures/Screen_Output%20.jpg "")
+  ![alt text](https://github.com/GuillermoElectrico/hyperspeed-tester/blob/master/Documentation/Pictures/Screen_Output%20.jpg "")
   
 And the front end!
 
-  ![alt text](https://github.com/LukeCSmith0/hyperspeed-tester/blob/master/Documentation/Pictures/lintester_php.PNG "")
+  ![alt text](https://github.com/GuillermoElectrico/hyperspeed-tester/blob/master/Documentation/Pictures/lintester_php.PNG "")
   
-  ![alt text](https://github.com/LukeCSmith0/hyperspeed-tester/blob/master/Documentation/Pictures/lintester_admin_php.PNG "")
+  ![alt text](https://github.com/GuillermoElectrico/hyperspeed-tester/blob/master/Documentation/Pictures/lintester_admin_php.PNG "")
