@@ -269,7 +269,7 @@ def runTest() :
 
     ##Try and execute the IPerf test Download. Specifies a timeout of 14 seconds for the IPerf connection
     try:
-        procId = subprocess.run(["iperf3","-c", hostname, "-p", hostport, "-J", "-t", "15", "-R" ], stdout=subprocess.PIPE, timeout=30)
+        procId = subprocess.run(["iperf3","-c", hostname, "-p", hostport, "-J", "-t", "15", "-P", "10", "-R" ], stdout=subprocess.PIPE, timeout=30)
         print hostname
     ##Raise an error if the timeout expires and re-run the test
     except subprocess.TimeoutExpired:
@@ -324,7 +324,7 @@ def runTest() :
 
     ##Try and execute the IPerf test Upload. Specifies a timeout of 14 seconds for the IPerf connection
     try:
-        procId = subprocess.run(["iperf3","-c", hostname, "-p", hostport, "-J", "-t", "15" ], stdout=subprocess.PIPE, timeout=30)
+        procId = subprocess.run(["iperf3","-c", hostname, "-p", hostport, "-J", "-t", "15", "-P", "10" ], stdout=subprocess.PIPE, timeout=30)
         print hostname
     ##Raise an error if the timeout expires and re-run the test
     except subprocess.TimeoutExpired:
