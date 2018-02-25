@@ -26,8 +26,8 @@ hostname = "X.X.X.X"
 log_files = "/home/iperf"
 
 #Define global variables
-sent_gbps = ""
-received_gbps = ""
+sent_mbps = ""
+received_mbps = ""
 peak = ""
 ############### Deals with screen initialisation on the board ###############
 # --LCD
@@ -214,9 +214,9 @@ def edit_json(hashed_file_name, gateway_mac) :
         if "timed_out" in ex:
             ookla_results["download"] = ""
             ookla_results["upload"] = ""
-        else:
-            ookla_results["download"] = ""
-            ookla_results["upload"] = ""
+        #else:
+		#	ookla_results["download"] = ""
+        #   ookla_results["upload"] = ""
     finally:
         signal.alarm(0)
      
@@ -239,17 +239,20 @@ def edit_json(hashed_file_name, gateway_mac) :
 
 ##Function will run the Line Test
 def runTest() :
-    global sent_gbps
-    global received_gbps
+    global sent_mbps
+    global received_mbps
     global hostname
     global peak
 
     ScreenOutput('Speed Test', 'Executing...')
     time.sleep(1)
+	
+	ScreenOutput('Speed Test', 'Download...')
+    time.sleep(1)
 
-    ##Try and execute the IPerf test. Specifies a timeout of 14 seconds for the IPerf connection
+    ##Try and execute the IPerf test Download. Specifies a timeout of 14 seconds for the IPerf connection
     try:
-        procId = subprocess.run(["iperf3","-c", hostname, "-J", "-t", "15" ], stdout=subprocess.PIPE, timeout=30)
+        procId = subprocess.run(["iperf3","-c", hostname, "-J", "-t", "15", "-R" ], stdout=subprocess.PIPE, timeout=30)
         print hostname
     ##Raise an error if the timeout expires and re-run the test
     except subprocess.TimeoutExpired:
@@ -260,12 +263,12 @@ def runTest() :
     json_output = procId.stdout
 
     ##Write the JSON to the file
-    f = open(log_files + '/results.json', 'w+')
+    f = open(log_files + '/resultsDownload.json', 'w+')
     string_to_write = str(json_output)
     f.write(string_to_write)
     f.close()
 
-    file_name = log_files + "/results.json"
+    file_name = log_files + "/resultsDownload.json"
 
     ##Open the JSON file just created
     with open(file_name) as json_data:
@@ -275,7 +278,7 @@ def runTest() :
     ##busy message
     try:
         ##Extract the sent and received BPS for screen output
-        sent_bps = jdata['end']['sum_sent']['bits_per_second']
+        #sent_bps = jdata['end']['sum_sent']['bits_per_second']
         received_bps =  jdata['end']['sum_received']['bits_per_second']
         counter = 0
         speed_interval_list = list()
@@ -294,10 +297,65 @@ def runTest() :
         executeTesting()
 
     ##Convert the bps into gbps
-    sent_gbps = sent_bps / 1000000
-    received_gbps = received_bps / 1000000
-    print str(sent_gbps)
-    print str(received_gbps)
+    #sent_mbps = sent_bps / 1000000
+    received_mbps = received_bps / 1000000
+    #print str(sent_mbps)
+    print str(received_mbps)
+	
+	ScreenOutput('Speed Test', 'Upload...')
+    time.sleep(1)
+
+    ##Try and execute the IPerf test Upload. Specifies a timeout of 14 seconds for the IPerf connection
+    try:
+        procId = subprocess.run(["iperf3","-c", hostname, "-J", "-t", "15" ], stdout=subprocess.PIPE, timeout=30)
+        print hostname
+    ##Raise an error if the timeout expires and re-run the test
+    except subprocess.TimeoutExpired:
+        ScreenOutput('Speed Test', 'Failed')
+        time.sleep(3)
+        executeTesting()
+    ##Take the stdout and convert to JSON from the executed command
+    json_output = procId.stdout
+
+    ##Write the JSON to the file
+    f = open(log_files + '/resultsUpload.json', 'w+')
+    string_to_write = str(json_output)
+    f.write(string_to_write)
+    f.close()
+
+    file_name = log_files + "/resultsUpload.json"
+
+    ##Open the JSON file just created
+    with open(file_name) as json_data:
+        jdata = json.load(json_data)
+
+    ##Check to see whether the JSON entered into the file is from a successful test and not a server
+    ##busy message
+    try:
+        ##Extract the sent and received BPS for screen output
+        sent_bps = jdata['end']['sum_sent']['bits_per_second']
+        #received_bps =  jdata['end']['sum_received']['bits_per_second']
+        #counter = 0
+        #speed_interval_list = list()
+        #for x in jdata["intervals"]:
+        #    var = jdata['intervals'][counter]['sum']['bits_per_second']
+        #    speed_interval_list.append(var)
+        #    counter = counter+1
+        #peak = max(speed_interval_list)
+        #peak = peak / 1000000
+
+    ##Display the error if the server is busy if the JSON is not complete
+    except:
+        ScreenOutput('Server Busy', 'Retrying')
+        time.sleep(3)
+        ##Rerun the test again
+        executeTesting()
+
+    ##Convert the bps into gbps
+    sent_mbps = sent_bps / 1000000
+    #received_mbps = received_bps / 1000000
+    print str(sent_mbps)
+    #print str(received_mbps)
     ScreenOutput('Speed Test', 'Finished')
     time.sleep(1)
 
@@ -310,8 +368,9 @@ def runTest() :
     hash_name = md5_hash[:10]
     new_hash_name = log_files + "/" + hash_name.upper()
     print new_hash_name
-    ##Rename the file from results.json to the generated hash to uniquely identify the hash
-    shutil.move(log_files + "/results.json", new_hash_name)
+    ##Rename the file from resultsUpload.json to the generated hash to uniquely identify the hash
+	shutil.move(log_files + "/resultsDownload.json", new_hash_name + "Download")
+    shutil.move(log_files + "/resultsUpload.json", new_hash_name + "Upload")
 
     lowerHash = md5_hash[:10]
     ##Convert the hash to uppercase for nicer viewing
@@ -321,8 +380,8 @@ def runTest() :
 
 ##Function actually conducts the test and performs the checks
 def executeTesting():
-    global sent_gbps
-    global received_gbps
+    global sent_mbps
+    global received_mbps
     global peak
 
     ##Display that the test is starting
@@ -343,20 +402,22 @@ def executeTesting():
         ##Obtain the MAC address of the current gateway
         gateway_mac = get_dg_mac()
         ##Change the JSON file created to include the extra data including gateway MAC, board MAC, and hash
-        edit_json(hash_file, gateway_mac)
+        edit_json(hash_file+ "Download", gateway_mac)
+		edit_json(hash_file+ "Upload", gateway_mac)
         ##Call the function that will copy the test file specified by the hash to the IPerf Server
         #copyftpfiles(hash_file)
-        copySCPfiles(hash_file)
+		copySCPfiles(hash_file+ "Download")
+        copySCPfiles(hash_file+ "Upload")
         ##Execute an infinite while loop to loop the screen output at the end of the test
         while True:
             ##Display the test case ID which is equal to the hash
             ScreenOutput('Test ID', hash_file)
             time.sleep(5)
             ##Display the upload speed extracted from the JSON file
-            ScreenOutput('Upload:', str(round(sent_gbps, 2)) + " Mbps" )
+            ScreenOutput('Upload:', str(round(sent_mbps, 2)) + " Mbps" )
             time.sleep(2)
             ##Display the download speed extracted from the JSON file
-            ScreenOutput('Download:', str(round(received_gbps, 2)) + " Mbps")
+            ScreenOutput('Download:', str(round(received_mbps, 2)) + " Mbps")
             time.sleep(2)
             ##Display the download speed extracted from the JSON file
             ScreenOutput('Peak:', str(round(peak, 2)) + " Mbps")
