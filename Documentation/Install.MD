@@ -159,10 +159,11 @@ There are a couple of items that require manual configurations depending on the 
 * Copying between the IPerf Server and Iperf Log Server is very similar. We use RCP to copy the files from the IPerf server using a dedicated account for this purpose. Therefore the account needs to be created on the IPerf server for this. Again we use public and private keys for authentication with this account but this can be changed.
 
 ## Script Changes
-The scripts on this repository use placeholders for various values that need to be assigned in accordance with the environment in which it is run. The following need to be updated in execute_test_final.py:
+The scripts on this repository use placeholders for various values that need to be assigned in accordance with the environment in which it is run. The following need to be updated in execute_test_final.py or execute_test_final_simple.py:
 
 * Hostname - The hostname of the IPerf server that the tests will be run against.
-* SCP_Username - On the Odroid boards SCP is used to copy the files to the IPerf server. The username needs to be changed to the one that has been created on the IPerf server for this purpose.
+* Hostport - The hostname of the IPerf server that the tests will be run against.
+* userscp - On the Odroid boards SCP is used to copy the files to the IPerf server. The username needs to be changed to the one that has been created on the IPerf server for this purpose. (only in execute_test_final.py)
 
 The following needs to be changed in json_server_side.py:
 
