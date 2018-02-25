@@ -50,7 +50,7 @@ wget -O /home/iperf-scripts/execute_test_final_simple.py https://raw.githubuserc
 wget -O /home/iperf-scripts/boot.py https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Client-Script/boot.py
 wget -O /home/iperf-scripts/button_script_simple.py https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Client-Script/button_script_simple.py
 wget -O /home/iperf-scripts/button_shell_script_simple.sh https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Client-Script/button_shell_script_simple.sh
-chmod +x /home/iperf-scripts/button_shell_script.sh
+chmod +x /home/iperf-scripts/button_shell_script_simple.sh
 sleep 2
 echo *******Setting Cron to execute on startup for script execution********
 (crontab -l 2>/dev/null; echo "@reboot python /home/iperf-scripts/button_script_simple.py") | crontab -
