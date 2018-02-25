@@ -21,9 +21,11 @@ from paramiko import SSHClient
 import paramiko
 from scp import SCPClient
 
-##Set the hostname of the iperf server to perform tests againsts
+##Set the hostname and hostport of the iperf server to perform tests againsts and username scp to update results
 hostname = "X.X.X.X"
+hostport = "5201"
 log_files = "/home/iperf"
+userscp = "username"
 
 #Define global variables
 sent_mbps = ""
@@ -118,7 +120,7 @@ def testIperfSocket() :
     #check iperf is running on the host by establishing the socket the port 5201
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(3)
-    result = sock.connect_ex((hostname, 5201))
+    result = sock.connect_ex((hostname, hostport))
     if result == 0:
         sock.shutdown(socket.SHUT_RDWR)
         ##Close the socket otherwise the server thinks a test is still occurring which prevents any further tests
@@ -140,13 +142,23 @@ def copySCPfiles(hashed_file_name):
     try:
         ScreenOutput("Copying Test", "To Server")
         time.sleep(3)
-        hashed_file_path = log_files + "/" + hashed_file_name
+        hashed_file_path1 = log_files + "/" + hashed_file_name + "_Download"
+		hashed_file_path2 = log_files + "/" + hashed_file_name + "_Upload"
+		hashed_file_path3 = log_files + "/" + hashed_file_name + "_Data"
         ssh = SSHClient()
         ssh.load_system_host_keys()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(hostname, username="username")
+        ssh.connect(hostname, username=userscp)
         scp = SCPClient(ssh.get_transport())
-        scp.put(hashed_file_path, hashed_file_path)
+		ScreenOutput("Copying Test", "Download")
+        time.sleep(1)
+        scp.put(hashed_file_path, hashed_file_path1)
+		ScreenOutput("Copying Test", "Upload")
+        time.sleep(1)
+		scp.put(hashed_file_path, hashed_file_path2)
+		ScreenOutput("Copying Test", "Data")
+        time.sleep(1)
+		scp.put(hashed_file_path, hashed_file_path3)
         scp.close()
         ScreenOutput('Test Copied', 'To Server')
         time.sleep(1)
@@ -157,18 +169,23 @@ def copySCPfiles(hashed_file_name):
         time.sleep(2)
         executeTesting()
 
-##Function will obtain the default gateway MAC address
-def get_dg_mac():
+##Function will obtain the default gateway Ip address
+def get_dg_ip():
     ##Grab the default gateway address
     gws = netifaces.gateways()
     gateway_address_list = gws['default'][netifaces.AF_INET]
     gateway_address = gateway_address_list[0]
 
+    return gateway_address
+		
+##Function will obtain the default gateway MAC address
+def get_dg_mac(gateway_ip): 
+
     ##Import the contents of the ARP table for reading
     arp_table = get_arp_table()
     ##Loop through each ARP entry to check whether the gateway address is present
     for arp_entry in arp_table:
-        if arp_entry["IP address"] == gateway_address:
+        if arp_entry["IP address"] == gateway_ip:
             ##Grab the MAC address associated with the gateway address
             gateway_mac = arp_entry["HW address"]
 
@@ -189,20 +206,20 @@ def perform_ookla_test():
     return ookla_array
 
 ##Function will take the returned JSON and append new required values on the end
-def edit_json(hashed_file_name, gateway_mac) :
+def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     ##Open the file and read the contents
-    file_path = log_files + "/" + hashed_file_name
-    f = open(file_path, 'r')
-    file_contents = f.read()
-    f.close()
+    file_path = log_files + "/" + hashed_file_name + "_Data"
+    #f = open(file_path, 'r')
+    #file_contents = f.read()
+    #f.close()
 
     ##Grab the IP address of the CPE device
     url_to_send = "http://" + hostname + ":6729/whats-my-ip"
     try:
         json_ip_address = requests.get(url_to_send).json()
-        gateway_ip = json_ip_address["ip"]
+        cpe_ip = json_ip_address["ip"]
     except:
-        gateway_ip = "Unknown"
+        cpe_ip = "Unknown"
 
     ##Perform an Ookla Speedtest with a 20 second timeout
     ookla_results = {}
@@ -227,13 +244,13 @@ def edit_json(hashed_file_name, gateway_mac) :
     print formatted_board_mac
 
     ##Load in the contents of the file and convert to a JSON object
-    json_file_contents = json.loads(file_contents)
+    #json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
-    json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip}
+    json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip, "CPE_ip": cpe_ip}
     json_file_contents["end"]["ookla_test"] = {"download": ookla_results["download"], "upload": ookla_results["upload"]}
     
     ##Dump the new JSON information into the file
-    json.dump(json_file_contents, open(file_path, "w"))
+    json.dump(json_file_contents, open(file_path, "w+"))
     
     
 
@@ -252,7 +269,7 @@ def runTest() :
 
     ##Try and execute the IPerf test Download. Specifies a timeout of 14 seconds for the IPerf connection
     try:
-        procId = subprocess.run(["iperf3","-c", hostname, "-J", "-t", "15", "-R" ], stdout=subprocess.PIPE, timeout=30)
+        procId = subprocess.run(["iperf3","-c", hostname, "-p", hostport, "-J", "-t", "15", "-R" ], stdout=subprocess.PIPE, timeout=30)
         print hostname
     ##Raise an error if the timeout expires and re-run the test
     except subprocess.TimeoutExpired:
@@ -307,7 +324,7 @@ def runTest() :
 
     ##Try and execute the IPerf test Upload. Specifies a timeout of 14 seconds for the IPerf connection
     try:
-        procId = subprocess.run(["iperf3","-c", hostname, "-J", "-t", "15" ], stdout=subprocess.PIPE, timeout=30)
+        procId = subprocess.run(["iperf3","-c", hostname, "-p", hostport, "-J", "-t", "15" ], stdout=subprocess.PIPE, timeout=30)
         print hostname
     ##Raise an error if the timeout expires and re-run the test
     except subprocess.TimeoutExpired:
@@ -399,15 +416,15 @@ def executeTesting():
         ##Obtain the hash of the file received from executing the test
         hash_file = runTest()
         print hash_file
+		##Obtain the Ip address of the current gateway
+        gateway_ip = get_dg_ip()
         ##Obtain the MAC address of the current gateway
-        gateway_mac = get_dg_mac()
+        gateway_mac = get_dg_mac(gateway_ip)
         ##Change the JSON file created to include the extra data including gateway MAC, board MAC, and hash
-        edit_json(hash_file+ "Download", gateway_mac)
-		edit_json(hash_file+ "Upload", gateway_mac)
+        edit_json(hash_file, gateway_mac, gateway_ip)
         ##Call the function that will copy the test file specified by the hash to the IPerf Server
         #copyftpfiles(hash_file)
-		copySCPfiles(hash_file+ "Download")
-        copySCPfiles(hash_file+ "Upload")
+		copySCPfiles(hash_file)
         ##Execute an infinite while loop to loop the screen output at the end of the test
         while True:
             ##Display the test case ID which is equal to the hash
