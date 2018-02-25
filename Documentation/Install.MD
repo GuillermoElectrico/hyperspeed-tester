@@ -6,6 +6,45 @@ The following contains the necessary actions to take to ensure the system functi
 Go to:
 http://adjarvis.com/odroid-c2-ubuntu-install/
 
+## Odroid Board Installation Simple (Only test to iperf server, only local log. Perfect to test networks without Internet access or remote log access. Example: use public iperf servers)
+The necessary files and packages are included in the install script. The script is a very basic method to list the required packages and install them. It is in no way indestructible. In the event of issues the packages can be manually installed. On top of the packages there are a couple of directories we use by default:
+
+* /home/iperf
+* /home/iperf-scripts
+
+These can be changed freely but will be created in the install script.
+
+To install with the script go to the 'odroid-simple-install_script.sh' in Installation-Scripts
+
+	1. Copy the script to odroid board - wget https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Installation-Scripts/odroid-simple-install_script.sh
+
+	2. Chmod file so that you can run it 'chmod u+x odroid-simple-install_script.sh'
+
+	3. Run the odroid-simple-install_script.sh file
+	
+In addition to the necessary packages the following scripts need to be included on the Odroid board:
+
+* boot.py
+* button_script_simple.py
+* button_shell_script_simple.sh
+* execute_test_final_simple.py
+
+By default all of these are stored in the /home/iperf-scripts folder. All of the necessary packages for the Odroid board can be found in Client-Script. They are all installed as part of the install script and do not need to be manually put on there.
+
+## IPerf Server Installation Simple (Only iperf server, without whats_my_ip application to log cpe ip)
+The IPerf server has a relatively small footprint in terms of required packages. The only packages needed are the IPerf.
+
+To install with the script go to the 'iperf-server-simple-install-script.sh' in Installation-Scripts
+
+	1. Copy the script to server - wget https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Installation-Scripts/iperf-server-simple-install-script.sh
+
+	2. Chmod file so that you can run it 'chmod u+x iperf-server-simple-install-script.sh'
+
+	3. Run the iperf-server-simple-install-script.sh file 
+	
+Of importance as well is the cron jobs that are run on the server. The required ones can be found in Server-Script.
+
+
 ## Odroid Board Installation
 The necessary files and packages are included in the install script. The script is a very basic method to list the required packages and install them. It is in no way indestructible. In the event of issues the packages can be manually installed. On top of the packages there are a couple of directories we use by default:
 
@@ -26,7 +65,7 @@ In addition to the necessary packages the following scripts need to be included 
 
 * boot.py
 * button_script.py
-* button_shell_script.py
+* button_shell_script.sh
 * execute_test_final.py
 
 By default all of these are stored in the /home/iperf-scripts folder. All of the necessary packages for the Odroid board can be found in Client-Script. They are all installed as part of the install script and do not need to be manually put on there.
