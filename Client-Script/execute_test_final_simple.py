@@ -17,7 +17,7 @@ from python_arptable import get_arp_table
 from uuid import getnode as get_mac
 
 ##Set the hostname an hostport of the iperf server to perform tests againsts
-hostname = "X.X.X.X"
+hostname = "192.168.0.100"
 hostport = "5201"
 log_files = "/home/iperf"
 
@@ -91,7 +91,7 @@ def testIperfSocket() :
     #check iperf is running on the host by establishing the socket the port 5201
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(3)
-    result = sock.connect_ex((hostname, hostport))
+    result = sock.connect_ex((hostname, int(hostport)))
     if result == 0:
         sock.shutdown(socket.SHUT_RDWR)
         ##Close the socket otherwise the server thinks a test is still occurring which prevents any further tests
@@ -132,11 +132,11 @@ def get_dg_mac(gateway_ip):
 	
 ##Function will take the returned JSON and append new required values on the end
 def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
-    ##Open the file and read the contents
-    file_path = log_files + "/" + hashed_file_name + "_Data"
-    #f = open(file_path, 'r')
-    #file_contents = f.read()
-    #f.close()
+    ##Open the file Upload and read the contents
+    file_path = log_files + "/" + hashed_file_name + "_Upload"
+    f = open(file_path, 'r')
+    file_contents = f.read()
+    f.close()
 
     ##Obtain the MAC address of the board
     board_mac = get_mac()
@@ -145,30 +145,94 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     print formatted_board_mac
 
     ##Load in the contents of the file and convert to a JSON object
-    #json_file_contents = json.loads(file_contents)
+    json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
     json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip}
     
     ##Dump the new JSON information into the file
-    json.dump(json_file_contents, open(file_path, "w+"))
+    json.dump(json_file_contents, open(file_path, "w"))
+	
+	##Open the file Download and read the contents
+    file_path = log_files + "/" + hashed_file_name + "_Download"
+    f = open(file_path, 'r')
+    file_contents = f.read()
+    f.close()
+
+    ##Obtain the MAC address of the board
+    board_mac = get_mac()
+    ##Format the MAC address into a common form
+    formatted_board_mac = str(':'.join(("%012X" % board_mac)[i:i+2] for i in range(0, 12, 2)))
+    print formatted_board_mac
+
+    ##Load in the contents of the file and convert to a JSON object
+    json_file_contents = json.loads(file_contents)
+    ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
+    json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip}
+    
+    ##Dump the new JSON information into the file
+    json.dump(json_file_contents, open(file_path, "w"))
     
 ##Function will run the Line Test
 def runTest() :
     global sent_mbps
     global received_mbps
     global hostname
-	global hostport
+    global hostport
     global peak
 
     ScreenOutput('Speed Test', 'Executing...')
     time.sleep(1)
 	
-	ScreenOutput('Speed Test', 'Download...')
+    ScreenOutput('Speed Test', 'Upload...')
+    time.sleep(1)
+
+    ##Try and execute the IPerf test Upload. Specifies a timeout of 14 seconds for the IPerf connection
+    try:
+        procId = subprocess.run(["iperf3", "-c", hostname, "-p", hostport, "-J", "-t", "15", "-Z" ], stdout=subprocess.PIPE, timeout=30)
+        print hostname
+    ##Raise an error if the timeout expires and re-run the test
+    except subprocess.TimeoutExpired:
+        ScreenOutput('Speed Test', 'Failed')
+        time.sleep(3)
+        executeTesting()
+    ##Take the stdout and convert to JSON from the executed command
+    json_output = procId.stdout
+
+    ##Write the JSON to the file
+    f = open(log_files + '/resultsUpload.json', 'w+')
+    string_to_write = str(json_output)
+    f.write(string_to_write)
+    f.close()
+
+    file_name = log_files + "/resultsUpload.json"
+
+    ##Open the JSON file just created
+    with open(file_name) as json_data:
+        jdata = json.load(json_data)
+
+    ##Check to see whether the JSON entered into the file is from a successful test and not a server
+    ##busy message
+    try:
+        ##Extract the sent BPS for screen output
+        sent_bps = jdata['end']['sum_sent']['bits_per_second']
+
+    ##Display the error if the server is busy if the JSON is not complete
+    except:
+        ScreenOutput('Server Busy', 'Retrying')
+        time.sleep(3)
+        ##Rerun the test again
+        executeTesting()
+
+    ##Convert the bps into gbps
+    sent_mbps = sent_bps / 1000000
+    print str(sent_mbps)
+	
+    ScreenOutput('Speed Test', 'Download...')
     time.sleep(1)
 
     ##Try and execute the IPerf test Download. Specifies a timeout of 14 seconds for the IPerf connection
     try:
-        procId = subprocess.run(["iperf3","-c", hostname, "-p", hostport, "-J", "-t", "15", "-P", "10", "-R" ], stdout=subprocess.PIPE, timeout=30)
+        procId = subprocess.run(["iperf3", "-c", hostname, "-p", hostport, "-J", "-t", "15", "-R" ], stdout=subprocess.PIPE, timeout=30)
         print hostname
     ##Raise an error if the timeout expires and re-run the test
     except subprocess.TimeoutExpired:
@@ -215,49 +279,6 @@ def runTest() :
     received_mbps = received_bps / 1000000
     print str(received_mbps)
 	
-	ScreenOutput('Speed Test', 'Upload...')
-    time.sleep(1)
-
-    ##Try and execute the IPerf test Upload. Specifies a timeout of 14 seconds for the IPerf connection
-    try:
-        procId = subprocess.run(["iperf3","-c", hostname, "-p", hostport, "-J", "-t", "15", "-P", "10" ], stdout=subprocess.PIPE, timeout=30)
-        print hostname
-    ##Raise an error if the timeout expires and re-run the test
-    except subprocess.TimeoutExpired:
-        ScreenOutput('Speed Test', 'Failed')
-        time.sleep(3)
-        executeTesting()
-    ##Take the stdout and convert to JSON from the executed command
-    json_output = procId.stdout
-
-    ##Write the JSON to the file
-    f = open(log_files + '/resultsUpload.json', 'w+')
-    string_to_write = str(json_output)
-    f.write(string_to_write)
-    f.close()
-
-    file_name = log_files + "/resultsUpload.json"
-
-    ##Open the JSON file just created
-    with open(file_name) as json_data:
-        jdata = json.load(json_data)
-
-    ##Check to see whether the JSON entered into the file is from a successful test and not a server
-    ##busy message
-    try:
-        ##Extract the sent BPS for screen output
-        sent_bps = jdata['end']['sum_sent']['bits_per_second']
-
-    ##Display the error if the server is busy if the JSON is not complete
-    except:
-        ScreenOutput('Server Busy', 'Retrying')
-        time.sleep(3)
-        ##Rerun the test again
-        executeTesting()
-
-    ##Convert the bps into gbps
-    sent_mbps = sent_bps / 1000000
-    print str(sent_mbps)
     ScreenOutput('Speed Test', 'Finished')
     time.sleep(1)
 
@@ -271,7 +292,7 @@ def runTest() :
     new_hash_name = log_files + "/" + hash_name.upper()
     print new_hash_name
     ##Rename the file from resultsUpload.json to the generated hash to uniquely identify the hash
-	shutil.move(log_files + "/resultsDownload.json", new_hash_name + "_Download")
+    shutil.move(log_files + "/resultsDownload.json", new_hash_name + "_Download")
     shutil.move(log_files + "/resultsUpload.json", new_hash_name + "_Upload")
 
     lowerHash = md5_hash[:10]
@@ -316,7 +337,7 @@ def executeTesting():
             ScreenOutput('Download:', str(round(received_mbps, 2)) + " Mbps")
             time.sleep(2)
             ##Display the download speed extracted from the JSON file
-            ScreenOutput('Peak:', str(round(peak, 2)) + " Mbps")
+            ScreenOutput('Peak Download:', str(round(peak, 2)) + " Mbps")
             time.sleep(2)
     else:
         ##If the ping test fails meaning no connectivity to the IPerf server then restart the test again

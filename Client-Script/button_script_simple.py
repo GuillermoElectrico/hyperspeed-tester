@@ -1,3 +1,4 @@
+import netifaces
 import wiringpi2
 import subprocess
 import time
@@ -59,8 +60,30 @@ while (1 == 1):
         os.system("python " + script_folder + "/execute_test_final_simple.py > /dev/null 2>&1 &")
 
     elif wiringpi2.digitalRead(6) == 0:
-        board_mac = get_mac()
-        formatted_board_mac = str(':'.join(("%012X" % board_mac)[i:i+2] for i in range(0, 12, 2)))
-        firstpart, secondpart = formatted_board_mac[:len(formatted_board_mac)/2], formatted_board_mac[len(formatted_board_mac)/2:]
-        ScreenOutput(firstpart, secondpart)
-        time.sleep(4)
+		time.sleep(3)
+		if wiringpi2.digitalRead(6) == 0:
+			subprocess.call([script_folder + "/button_shell_script_simple.sh"])
+			ScreenOutput("Shutdown?", "<- Yes | No ->")
+			time.sleep(3)
+			while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
+				time.sleep(1)
+			if wiringpi2.digitalRead(5) == 0:
+				ScreenOutput("Shutdown", "")
+				os.system("poweroff")
+				while (1 == 1):
+					time.sleep(1)
+			ScreenOutput("No Shutdown", "")
+			time.sleep(3)
+		else:
+			subprocess.call([script_folder + "/button_shell_script_simple.sh"])
+			board_mac = get_mac() 
+			IPAddr = netifaces.ifaddresses('eth0')[netifaces.AF_INET][0]['addr'] 
+			formatted_board_mac = str(''.join(("%012X" % board_mac)[i:i+2] for i in range(0, 12, 2)))
+			#firstpart, secondpart = formatted_board_mac[:len(formatted_board_mac)/2], formatted_board_mac[len(formatted_board_mac)/2:]
+			ScreenOutput(formatted_board_mac, str(IPAddr))
+			time.sleep(5)
+			while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
+				time.sleep(1)
+		ScreenOutput("Restart Script", "Please Wait...")
+		time.sleep(3)
+		os.system("python " + script_folder + "/execute_test_final_simple.py > /dev/null 2>&1 &")

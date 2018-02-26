@@ -34,7 +34,9 @@ git submodule update
 sleep 2
 echo *******Building Screen Package*******
 swig3.0 -python -threads wiringpi.i
-sudo python setup.py build install
+python setup.py build install
+rm /etc/modprobe.d/blacklist-w1.conf
+echo "blacklist w1_gpio">> /etc/modprobe.d/blacklist-w1.conf
 sleep 2
 echo *******Installing Python Requests module********
 pip install requests
@@ -54,7 +56,7 @@ chmod +x /home/iperf-scripts/button_shell_script_simple.sh
 sleep 2
 echo *******Setting Cron to execute on startup for script execution********
 (crontab -l 2>/dev/null; echo "@reboot python /home/iperf-scripts/button_script_simple.py") | crontab -
-(crontab -l 2>/dev/null; echo "@reboot python /home/iperf-scripts/boot.py") | crontab -
-(crontab -l 2>/dev/null; echo "@reboot sleep 30; python /home/iperf-scripts/execute_test_final_simple.py") | crontab -
+(crontab -l 2>/dev/null; echo "@reboot sleep 1 ;python /home/iperf-scripts/boot.py") | crontab -
+(crontab -l 2>/dev/null; echo "@reboot sleep 32; python /home/iperf-scripts/execute_test_final_simple.py") | crontab -
 echo *******Setup complete*******
 sleep 2

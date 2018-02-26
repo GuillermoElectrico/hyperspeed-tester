@@ -264,7 +264,7 @@ def runTest() :
     ScreenOutput('Speed Test', 'Executing...')
     time.sleep(1)
 	
-	ScreenOutput('Speed Test', 'Download...')
+    ScreenOutput('Speed Test', 'Download...')
     time.sleep(1)
 
     ##Try and execute the IPerf test Download. Specifies a timeout of 14 seconds for the IPerf connection
@@ -319,7 +319,7 @@ def runTest() :
     #print str(sent_mbps)
     print str(received_mbps)
 	
-	ScreenOutput('Speed Test', 'Upload...')
+    ScreenOutput('Speed Test', 'Upload...')
     time.sleep(1)
 
     ##Try and execute the IPerf test Upload. Specifies a timeout of 14 seconds for the IPerf connection
@@ -386,7 +386,7 @@ def runTest() :
     new_hash_name = log_files + "/" + hash_name.upper()
     print new_hash_name
     ##Rename the file from resultsUpload.json to the generated hash to uniquely identify the hash
-	shutil.move(log_files + "/resultsDownload.json", new_hash_name + "Download")
+    shutil.move(log_files + "/resultsDownload.json", new_hash_name + "Download")
     shutil.move(log_files + "/resultsUpload.json", new_hash_name + "Upload")
 
     lowerHash = md5_hash[:10]
