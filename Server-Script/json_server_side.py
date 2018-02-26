@@ -1,4 +1,3 @@
-
 import json
 import glob
 import MySQLdb
@@ -38,8 +37,6 @@ def run_script():
             speed_interval_list.append(var)
             counter = counter+1
 
-
-
         test_duration =  jdata['start']['test_start']['duration']
         connecting_to =  jdata['start']['connecting_to']['host']
         sent_bps = jdata['end']['sum_sent']['bits_per_second']
@@ -53,7 +50,7 @@ def run_script():
         timestamp_ = calendar.timegm(time.gmtime())
     	mac_address_q = "'" + mac_address + "'"
     	print mac_address_q
-        #Convert from bps to Giga bps
+        #Convert from bps to mega bps
         sent_gbps = sent_bps / 1000000
         received_gbps = received_bps / 1000000
         peak_gbps = peak / 1000000

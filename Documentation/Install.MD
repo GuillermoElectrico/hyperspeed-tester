@@ -31,20 +31,6 @@ In addition to the necessary packages the following scripts need to be included 
 
 By default all of these are stored in the /home/iperf-scripts folder. All of the necessary packages for the Odroid board can be found in Client-Script. They are all installed as part of the install script and do not need to be manually put on there.
 
-## IPerf Server Installation Simple (Only iperf server, without whats_my_ip application to log cpe ip)
-The IPerf server has a relatively small footprint in terms of required packages. The only packages needed are the IPerf.
-
-To install with the script go to the 'iperf-server-simple-install-script.sh' in Installation-Scripts
-
-	1. Copy the script to server - wget https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Installation-Scripts/iperf-server-simple-install-script.sh
-
-	2. Chmod file so that you can run it 'chmod u+x iperf-server-simple-install-script.sh'
-
-	3. Run the iperf-server-simple-install-script.sh file 
-	
-Of importance as well is the cron jobs that are run on the server. The required ones can be found in Server-Script.
-
-
 ## Odroid Board Installation
 The necessary files and packages are included in the install script. The script is a very basic method to list the required packages and install them. It is in no way indestructible. In the event of issues the packages can be manually installed. On top of the packages there are a couple of directories we use by default:
 
@@ -70,8 +56,8 @@ In addition to the necessary packages the following scripts need to be included 
 
 By default all of these are stored in the /home/iperf-scripts folder. All of the necessary packages for the Odroid board can be found in Client-Script. They are all installed as part of the install script and do not need to be manually put on there.
 
-## IPerf Server Installation
-The IPerf server has a relatively small footprint in terms of required packages. The only two packages needed are the IPerf package and rssh packages.
+## IPerf Server Installation 
+The IPerf server has a relatively small footprint in terms of required packages. The only packages needed are the IPerf.
 
 To install with the script go to the 'iperf-server-install-script.sh' in Installation-Scripts
 
@@ -83,7 +69,18 @@ To install with the script go to the 'iperf-server-install-script.sh' in Install
 	
 Of importance as well is the cron jobs that are run on the server. The required ones can be found in Server-Script.
 
-In addition to the required applications the following scripts need to be on the IPerf server:
+## Whats My Ip Server Installation
+The whats-my-ip server has a relatively small footprint in terms of required packages. The only packages needed are the rssh.
+
+To install with the script go to the 'whats-my-ip-server-install-script.sh' in Installation-Scripts
+
+	1. Copy the script to server - wget https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Installation-Scripts/whats-my-ip-server-install-script.sh
+
+	2. Chmod file so that you can run it 'chmod u+x whats-my-ip-server-install-script.sh'
+
+	3. Run the whats-my-ip-server-install-script.sh file 
+
+In addition to the required applications the following scripts need to be on the server:
 
 * whats_my_ip.py
 * whats-my-ip.conf
@@ -162,8 +159,12 @@ There are a couple of items that require manual configurations depending on the 
 The scripts on this repository use placeholders for various values that need to be assigned in accordance with the environment in which it is run. The following need to be updated in execute_test_final.py or execute_test_final_simple.py:
 
 * Hostname - The hostname of the IPerf server that the tests will be run against.
-* Hostport - The hostname of the IPerf server that the tests will be run against.
-* userscp - On the Odroid boards SCP is used to copy the files to the IPerf server. The username needs to be changed to the one that has been created on the IPerf server for this purpose. (only in execute_test_final.py)
+* Hostport - The port of the IPerf server that the tests will be run against.
+* scphost - The hostname of the log server that upload tests results.
+* scpport - The port of the log server that upload tests results.
+* scpuser - The user is used to copy the files to the log server.
+* scppass - The password is used to copy the files to the log server.
+* hostweb - The hostname of the web server to obtain the external IP.
 
 The following needs to be changed in json_server_side.py:
 

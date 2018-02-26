@@ -18,7 +18,7 @@ for info_line in returned_info:
     if r.status_code != 200:
         print "The following log: " + log_id + " still cannot be updated with the switch information."
     else:
-        print "The following log " + log_id + " can be updated with the switch informmation."
+        print "The following log " + log_id + " can be updated with the switch information."
         returned = r.json()
         switchPortNumber = returned['portNumber']
         switchIpAddress =  returned['ipAddress']

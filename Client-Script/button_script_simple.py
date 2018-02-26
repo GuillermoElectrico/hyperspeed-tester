@@ -69,7 +69,9 @@ while (1 == 1):
 				time.sleep(1)
 			if wiringpi2.digitalRead(5) == 0:
 				ScreenOutput("Shutting Down", "")
-				os.system("poweroff")
+				time.sleep(1)
+				os.system("sudo shutdown now")
+				time.sleep(1)
 				while (1 == 1):
 					time.sleep(1)
 			ScreenOutput("No Shutdown", "")

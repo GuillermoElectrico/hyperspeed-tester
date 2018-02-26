@@ -21,11 +21,15 @@ from paramiko import SSHClient
 import paramiko
 from scp import SCPClient
 
-##Set the hostname and hostport of the iperf server to perform tests againsts and username scp to update results
+##Set the hostname and hostport of the iperf server to perform tests againsts, scphost, scpport and username to upload results and hostweb to obtain cpe_ip (external IP)
 hostname = "X.X.X.X"
 hostport = "5201"
 log_files = "/home/iperf"
-userscp = "username"
+scphost = "X.X.X.X"
+scpport = "22"
+scpuser = "username"
+scppass = "password"
+hostweb = "X.X.X.X"
 
 #Define global variables
 sent_mbps = ""
@@ -57,6 +61,30 @@ PORT_LCD_D6, PORT_LCD_D7, 0, 0, 0, 0);
 lcdRow = 0 # LCD Row
 lcdCol = 0 # LCD Column
 # --LCD
+
+# --LED
+LED1 = 21 
+wiringpi2.pinMode(LED1,1)
+wiringpi2.digitalWrite(LED1,0)
+LED2 = 22
+wiringpi2.pinMode(LED2,1)
+wiringpi2.digitalWrite(LED2,0)
+LED3 = 23
+wiringpi2.pinMode(LED3,1)
+wiringpi2.digitalWrite(LED3,0)
+LED4 = 24
+wiringpi2.pinMode(LED4,1)
+wiringpi2.digitalWrite(LED4,0)
+LED5 = 11
+wiringpi2.pinMode(LED5,1)
+wiringpi2.digitalWrite(LED5,0)
+LED6 = 26
+wiringpi2.pinMode(LED6,1)
+wiringpi2.digitalWrite(LED6,0)
+LED7 = 27
+wiringpi2.pinMode(LED7,1)
+wiringpi2.digitalWrite(LED7,0)
+# --LED
 
 ##Function displays the TopLine and BottomLine message passed on the screen
 def ScreenOutput(TopLine, BottomLine):
@@ -97,7 +125,7 @@ def testSCPSocket() :
     #check ftp is running on the host by established a socket on port 21. Set the timeout for the socket to 3 seconds
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(3)
-    result = sock.connect_ex((hostname, 22))
+    result = sock.connect_ex((scphost, int(scpport)))
     ##Closes the socket to ensure the connection is closed
     sock.shutdown(socket.SHUT_RDWR)
     sock.close()
@@ -120,7 +148,7 @@ def testIperfSocket() :
     #check iperf is running on the host by establishing the socket the port 5201
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(3)
-    result = sock.connect_ex((hostname, hostport))
+    result = sock.connect_ex((hostname, int(hostport)))
     if result == 0:
         sock.shutdown(socket.SHUT_RDWR)
         ##Close the socket otherwise the server thinks a test is still occurring which prevents any further tests
@@ -142,23 +170,19 @@ def copySCPfiles(hashed_file_name):
     try:
         ScreenOutput("Copying Test", "To Server")
         time.sleep(3)
-        hashed_file_path1 = log_files + "/" + hashed_file_name + "_Download"
-		hashed_file_path2 = log_files + "/" + hashed_file_name + "_Upload"
-		hashed_file_path3 = log_files + "/" + hashed_file_name + "_Data"
+        hashed_file_path1 = log_files + "/" + hashed_file_name + "_Upload"
+		hashed_file_path2 = log_files + "/" + hashed_file_name + "_Download"
         ssh = SSHClient()
         ssh.load_system_host_keys()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(hostname, username=userscp)
+        ssh.connect(scphost, port=int(scpport), username=scpuser, password=scppass)
         scp = SCPClient(ssh.get_transport())
-		ScreenOutput("Copying Test", "Download")
+        ScreenOutput("Copying Test", "Upload")
         time.sleep(1)
         scp.put(hashed_file_path, hashed_file_path1)
-		ScreenOutput("Copying Test", "Upload")
+        ScreenOutput("Copying Test", "Download")
         time.sleep(1)
-		scp.put(hashed_file_path, hashed_file_path2)
-		ScreenOutput("Copying Test", "Data")
-        time.sleep(1)
-		scp.put(hashed_file_path, hashed_file_path3)
+        scp.put(hashed_file_path, hashed_file_path2)
         scp.close()
         ScreenOutput('Test Copied', 'To Server')
         time.sleep(1)
@@ -207,14 +231,8 @@ def perform_ookla_test():
 
 ##Function will take the returned JSON and append new required values on the end
 def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
-    ##Open the file and read the contents
-    file_path = log_files + "/" + hashed_file_name + "_Data"
-    #f = open(file_path, 'r')
-    #file_contents = f.read()
-    #f.close()
-
-    ##Grab the IP address of the CPE device
-    url_to_send = "http://" + hostname + ":6729/whats-my-ip"
+	##Grab the IP address of the CPE device
+    url_to_send = "http://" + hostweb + ":6729/whats-my-ip"
     try:
         json_ip_address = requests.get(url_to_send).json()
         cpe_ip = json_ip_address["ip"]
@@ -242,12 +260,33 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     ##Format the MAC address into a common form
     formatted_board_mac = str(':'.join(("%012X" % board_mac)[i:i+2] for i in range(0, 12, 2)))
     print formatted_board_mac
+	
+	##Open the file and read the contents
+    file_path = log_files + "/" + hashed_file_name + "_Upload"
+    f = open(file_path, 'r')
+    file_contents = f.read()
+    f.close()
 
     ##Load in the contents of the file and convert to a JSON object
     #json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
     json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip, "CPE_ip": cpe_ip}
-    json_file_contents["end"]["ookla_test"] = {"download": ookla_results["download"], "upload": ookla_results["upload"]}
+    json_file_contents["end"]["ookla_test"] = {"upload": ookla_results["upload"]}
+    
+    ##Dump the new JSON information into the file
+    json.dump(json_file_contents, open(file_path, "w+"))
+	
+	##Open the file and read the contents
+    file_path = log_files + "/" + hashed_file_name + "_Download"
+    f = open(file_path, 'r')
+    file_contents = f.read()
+    f.close()
+
+    ##Load in the contents of the file and convert to a JSON object
+    #json_file_contents = json.loads(file_contents)
+    ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
+    json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip, "CPE_ip": cpe_ip}
+    json_file_contents["end"]["ookla_test"] = {"download": ookla_results["download"]}
     
     ##Dump the new JSON information into the file
     json.dump(json_file_contents, open(file_path, "w+"))
@@ -259,72 +298,18 @@ def runTest() :
     global sent_mbps
     global received_mbps
     global hostname
+    global hostport
     global peak
 
     ScreenOutput('Speed Test', 'Executing...')
     time.sleep(1)
-	
-    ScreenOutput('Speed Test', 'Download...')
-    time.sleep(1)
-
-    ##Try and execute the IPerf test Download. Specifies a timeout of 14 seconds for the IPerf connection
-    try:
-        procId = subprocess.run(["iperf3","-c", hostname, "-p", hostport, "-J", "-t", "15", "-P", "10", "-R" ], stdout=subprocess.PIPE, timeout=30)
-        print hostname
-    ##Raise an error if the timeout expires and re-run the test
-    except subprocess.TimeoutExpired:
-        ScreenOutput('Speed Test', 'Failed')
-        time.sleep(3)
-        executeTesting()
-    ##Take the stdout and convert to JSON from the executed command
-    json_output = procId.stdout
-
-    ##Write the JSON to the file
-    f = open(log_files + '/resultsDownload.json', 'w+')
-    string_to_write = str(json_output)
-    f.write(string_to_write)
-    f.close()
-
-    file_name = log_files + "/resultsDownload.json"
-
-    ##Open the JSON file just created
-    with open(file_name) as json_data:
-        jdata = json.load(json_data)
-
-    ##Check to see whether the JSON entered into the file is from a successful test and not a server
-    ##busy message
-    try:
-        ##Extract the sent and received BPS for screen output
-        #sent_bps = jdata['end']['sum_sent']['bits_per_second']
-        received_bps =  jdata['end']['sum_received']['bits_per_second']
-        counter = 0
-        speed_interval_list = list()
-        for x in jdata["intervals"]:
-            var = jdata['intervals'][counter]['sum']['bits_per_second']
-            speed_interval_list.append(var)
-            counter = counter+1
-        peak = max(speed_interval_list)
-        peak = peak / 1000000
-
-    ##Display the error if the server is busy if the JSON is not complete
-    except:
-        ScreenOutput('Server Busy', 'Retrying')
-        time.sleep(3)
-        ##Rerun the test again
-        executeTesting()
-
-    ##Convert the bps into gbps
-    #sent_mbps = sent_bps / 1000000
-    received_mbps = received_bps / 1000000
-    #print str(sent_mbps)
-    print str(received_mbps)
 	
     ScreenOutput('Speed Test', 'Upload...')
     time.sleep(1)
 
     ##Try and execute the IPerf test Upload. Specifies a timeout of 14 seconds for the IPerf connection
     try:
-        procId = subprocess.run(["iperf3","-c", hostname, "-p", hostport, "-J", "-t", "15", "-P", "10" ], stdout=subprocess.PIPE, timeout=30)
+        procId = subprocess.run(["iperf3", "-c", hostname, "-p", hostport, "-J", "-t", "15", "-Z" ], stdout=subprocess.PIPE, timeout=30)
         print hostname
     ##Raise an error if the timeout expires and re-run the test
     except subprocess.TimeoutExpired:
@@ -349,17 +334,8 @@ def runTest() :
     ##Check to see whether the JSON entered into the file is from a successful test and not a server
     ##busy message
     try:
-        ##Extract the sent and received BPS for screen output
+        ##Extract the sent BPS for screen output
         sent_bps = jdata['end']['sum_sent']['bits_per_second']
-        #received_bps =  jdata['end']['sum_received']['bits_per_second']
-        #counter = 0
-        #speed_interval_list = list()
-        #for x in jdata["intervals"]:
-        #    var = jdata['intervals'][counter]['sum']['bits_per_second']
-        #    speed_interval_list.append(var)
-        #    counter = counter+1
-        #peak = max(speed_interval_list)
-        #peak = peak / 1000000
 
     ##Display the error if the server is busy if the JSON is not complete
     except:
@@ -370,9 +346,60 @@ def runTest() :
 
     ##Convert the bps into gbps
     sent_mbps = sent_bps / 1000000
-    #received_mbps = received_bps / 1000000
     print str(sent_mbps)
-    #print str(received_mbps)
+	
+    ScreenOutput('Speed Test', 'Download...')
+    time.sleep(1)
+
+    ##Try and execute the IPerf test Download. Specifies a timeout of 14 seconds for the IPerf connection
+    try:
+        procId = subprocess.run(["iperf3", "-c", hostname, "-p", hostport, "-J", "-t", "15", "-Z", "-R" ], stdout=subprocess.PIPE, timeout=30)
+        print hostname
+    ##Raise an error if the timeout expires and re-run the test
+    except subprocess.TimeoutExpired:
+        ScreenOutput('Speed Test', 'Failed')
+        time.sleep(3)
+        executeTesting()
+    ##Take the stdout and convert to JSON from the executed command
+    json_output = procId.stdout
+
+    ##Write the JSON to the file
+    f = open(log_files + '/resultsDownload.json', 'w+')
+    string_to_write = str(json_output)
+    f.write(string_to_write)
+    f.close()
+
+    file_name = log_files + "/resultsDownload.json"
+
+    ##Open the JSON file just created
+    with open(file_name) as json_data:
+        jdata = json.load(json_data)
+
+    ##Check to see whether the JSON entered into the file is from a successful test and not a server
+    ##busy message
+    try:
+        ##Extract the received BPS for screen output
+        received_bps =  jdata['end']['sum_received']['bits_per_second']
+        counter = 0
+        speed_interval_list = list()
+        for x in jdata["intervals"]:
+            var = jdata['intervals'][counter]['sum']['bits_per_second']
+            speed_interval_list.append(var)
+            counter = counter+1
+        peak = max(speed_interval_list)
+        peak = peak / 1000000
+
+    ##Display the error if the server is busy if the JSON is not complete
+    except:
+        ScreenOutput('Server Busy', 'Retrying')
+        time.sleep(3)
+        ##Rerun the test again
+        executeTesting()
+
+    ##Convert the bps into gbps
+    received_mbps = received_bps / 1000000
+    print str(received_mbps)
+	
     ScreenOutput('Speed Test', 'Finished')
     time.sleep(1)
 
@@ -386,8 +413,8 @@ def runTest() :
     new_hash_name = log_files + "/" + hash_name.upper()
     print new_hash_name
     ##Rename the file from resultsUpload.json to the generated hash to uniquely identify the hash
-    shutil.move(log_files + "/resultsDownload.json", new_hash_name + "Download")
-    shutil.move(log_files + "/resultsUpload.json", new_hash_name + "Upload")
+    shutil.move(log_files + "/resultsDownload.json", new_hash_name + "_Download")
+    shutil.move(log_files + "/resultsUpload.json", new_hash_name + "_Upload")
 
     lowerHash = md5_hash[:10]
     ##Convert the hash to uppercase for nicer viewing
@@ -400,6 +427,14 @@ def executeTesting():
     global sent_mbps
     global received_mbps
     global peak
+	
+    wiringpi2.digitalWrite(LED1,0)
+    wiringpi2.digitalWrite(LED2,0)
+    wiringpi2.digitalWrite(LED3,0)
+    wiringpi2.digitalWrite(LED4,0)
+    wiringpi2.digitalWrite(LED5,0)
+    wiringpi2.digitalWrite(LED6,0)
+    wiringpi2.digitalWrite(LED7,0)
 
     ##Display that the test is starting
     ScreenOutput('Starting', 'Speed Test')
@@ -408,23 +443,37 @@ def executeTesting():
     connectionStatus = pingHome()
 
     if connectionStatus == True :
+		#Led1
+        wiringpi2.digitalWrite(LED1,1)
         ##Check whether there is connectivity to the FTP port
         #testFtpSocket()
         testSCPSocket()
+		#Led2
+        wiringpi2.digitalWrite(LED2,1)
         ##Check whether there is connectivity to the IPerf Server on port 5201 for the IPerf test
         testIperfSocket()
+		#Led3
+        wiringpi2.digitalWrite(LED3,1)
         ##Obtain the hash of the file received from executing the test
         hash_file = runTest()
+		#Led4
+        wiringpi2.digitalWrite(LED4,1)
         print hash_file
 		##Obtain the Ip address of the current gateway
         gateway_ip = get_dg_ip()
         ##Obtain the MAC address of the current gateway
         gateway_mac = get_dg_mac(gateway_ip)
+		#Led5
+        wiringpi2.digitalWrite(LED5,1)
         ##Change the JSON file created to include the extra data including gateway MAC, board MAC, and hash
         edit_json(hash_file, gateway_mac, gateway_ip)
+		#Led6
+        wiringpi2.digitalWrite(LED6,1)
         ##Call the function that will copy the test file specified by the hash to the IPerf Server
         #copyftpfiles(hash_file)
-		copySCPfiles(hash_file)
+        copySCPfiles(hash_file)
+		#Led7
+        wiringpi2.digitalWrite(LED7,1)
         ##Execute an infinite while loop to loop the screen output at the end of the test
         while True:
             ##Display the test case ID which is equal to the hash
@@ -437,7 +486,7 @@ def executeTesting():
             ScreenOutput('Download:', str(round(received_mbps, 2)) + " Mbps")
             time.sleep(2)
             ##Display the download speed extracted from the JSON file
-            ScreenOutput('Peak:', str(round(peak, 2)) + " Mbps")
+            ScreenOutput('Peak Download:', str(round(peak, 2)) + " Mbps")
             time.sleep(2)
     else:
         ##If the ping test fails meaning no connectivity to the IPerf server then restart the test again

@@ -156,17 +156,18 @@ def get_dg_mac(gateway_ip):
 	
 ##Function will take the returned JSON and append new required values on the end
 def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
+
+	##Obtain the MAC address of the board
+    board_mac = get_mac()
+    ##Format the MAC address into a common form
+    formatted_board_mac = str(':'.join(("%012X" % board_mac)[i:i+2] for i in range(0, 12, 2)))
+    print formatted_board_mac
+	
     ##Open the file Upload and read the contents
     file_path = log_files + "/" + hashed_file_name + "_Upload"
     f = open(file_path, 'r')
     file_contents = f.read()
     f.close()
-
-    ##Obtain the MAC address of the board
-    board_mac = get_mac()
-    ##Format the MAC address into a common form
-    formatted_board_mac = str(':'.join(("%012X" % board_mac)[i:i+2] for i in range(0, 12, 2)))
-    print formatted_board_mac
 
     ##Load in the contents of the file and convert to a JSON object
     json_file_contents = json.loads(file_contents)
@@ -181,12 +182,6 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     f = open(file_path, 'r')
     file_contents = f.read()
     f.close()
-
-    ##Obtain the MAC address of the board
-    board_mac = get_mac()
-    ##Format the MAC address into a common form
-    formatted_board_mac = str(':'.join(("%012X" % board_mac)[i:i+2] for i in range(0, 12, 2)))
-    print formatted_board_mac
 
     ##Load in the contents of the file and convert to a JSON object
     json_file_contents = json.loads(file_contents)
