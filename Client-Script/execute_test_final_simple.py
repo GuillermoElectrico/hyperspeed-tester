@@ -17,7 +17,7 @@ from python_arptable import get_arp_table
 from uuid import getnode as get_mac
 
 ##Set the hostname an hostport of the iperf server to perform tests againsts
-hostname = "192.168.0.100"
+hostname = "X.X.X.X"
 hostport = "5201"
 log_files = "/home/iperf"
 
@@ -51,6 +51,30 @@ PORT_LCD_D6, PORT_LCD_D7, 0, 0, 0, 0);
 lcdRow = 0 # LCD Row
 lcdCol = 0 # LCD Column
 # --LCD
+
+# --LED
+LED1 = 21 
+wiringpi2.pinMode(LED1,1)
+wiringpi2.digitalWrite(LED1,0)
+LED2 = 22
+wiringpi2.pinMode(LED2,1)
+wiringpi2.digitalWrite(LED2,0)
+LED3 = 23
+wiringpi2.pinMode(LED3,1)
+wiringpi2.digitalWrite(LED3,0)
+LED4 = 24
+wiringpi2.pinMode(LED4,1)
+wiringpi2.digitalWrite(LED4,0)
+LED5 = 11
+wiringpi2.pinMode(LED5,1)
+wiringpi2.digitalWrite(LED5,0)
+LED6 = 26
+wiringpi2.pinMode(LED6,1)
+wiringpi2.digitalWrite(LED6,0)
+LED7 = 27
+wiringpi2.pinMode(LED7,1)
+wiringpi2.digitalWrite(LED7,0)
+# --LED
 
 ##Function displays the TopLine and BottomLine message passed on the screen
 def ScreenOutput(TopLine, BottomLine):
@@ -232,7 +256,7 @@ def runTest() :
 
     ##Try and execute the IPerf test Download. Specifies a timeout of 14 seconds for the IPerf connection
     try:
-        procId = subprocess.run(["iperf3", "-c", hostname, "-p", hostport, "-J", "-t", "15", "-R" ], stdout=subprocess.PIPE, timeout=30)
+        procId = subprocess.run(["iperf3", "-c", hostname, "-p", hostport, "-J", "-t", "15", "-Z", "-R" ], stdout=subprocess.PIPE, timeout=30)
         print hostname
     ##Raise an error if the timeout expires and re-run the test
     except subprocess.TimeoutExpired:
@@ -306,6 +330,14 @@ def executeTesting():
     global sent_mbps
     global received_mbps
     global peak
+	
+    wiringpi2.digitalWrite(LED1,0)
+    wiringpi2.digitalWrite(LED2,0)
+    wiringpi2.digitalWrite(LED3,0)
+    wiringpi2.digitalWrite(LED4,0)
+    wiringpi2.digitalWrite(LED5,0)
+    wiringpi2.digitalWrite(LED6,0)
+    wiringpi2.digitalWrite(LED7,0)
 
     ##Display that the test is starting
     ScreenOutput('Starting', 'Speed Test')
@@ -314,17 +346,30 @@ def executeTesting():
     connectionStatus = pingHome()
 
     if connectionStatus == True :
+		#Led1
+        wiringpi2.digitalWrite(LED1,1)
         ##Check whether there is connectivity to the IPerf Server on port 5201 for the IPerf test
         testIperfSocket()
+		#Led2
+        wiringpi2.digitalWrite(LED2,1)
         ##Obtain the hash of the file received from executing the test
         hash_file = runTest()
+		#Led3
+        wiringpi2.digitalWrite(LED3,1)
         print hash_file
 		##Obtain the Ip address of the current gateway
         gateway_ip = get_dg_ip()
+		#Led4
+        wiringpi2.digitalWrite(LED4,1)
         ##Obtain the MAC address of the current gateway
         gateway_mac = get_dg_mac(gateway_ip)
+		#Led5
+        wiringpi2.digitalWrite(LED5,1)
         ##Change the JSON file created to include the extra data including gateway MAC, board MAC, and hash
         edit_json(hash_file, gateway_mac, gateway_ip)
+		#Led6-7
+        wiringpi2.digitalWrite(LED6,1)
+        wiringpi2.digitalWrite(LED7,1)
         ##Execute an infinite while loop to loop the screen output at the end of the test
         while True:
             ##Display the test case ID which is equal to the hash

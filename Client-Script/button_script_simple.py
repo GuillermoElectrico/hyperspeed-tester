@@ -68,7 +68,7 @@ while (1 == 1):
 			while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
 				time.sleep(1)
 			if wiringpi2.digitalRead(5) == 0:
-				ScreenOutput("Shutdown", "")
+				ScreenOutput("Shutting Down", "")
 				os.system("poweroff")
 				while (1 == 1):
 					time.sleep(1)
