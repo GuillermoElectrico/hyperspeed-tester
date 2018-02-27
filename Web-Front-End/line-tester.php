@@ -91,21 +91,18 @@ include_once("conn.php");
         <th>Download (Mbps)</th>
         <th>Peak (Mbps)</th>
         <th>MAC Address</th>
-        <th>Switch Port Number</th>
-        <th>Switch IP Address</th>
-        <th>Switch Name</th>
         <th>JSON</th>
       </tr></thead>
       <tbody class="result_tbody">
           <?php
             if (isset($_GET["test-id"]))
             {
-              $sql = "Select * from test_logs inner join engineer_assignment on test_logs.board_id = engineer_assignment.board_id WHERE file_hash = '" . $_GET['test-id'] .  "' ORDER BY `test_logs`.`timestamp` DESC";
+              $sql = "Select * from test_logs_upload inner join engineer_assignment on test_logs_upload.board_id = engineer_assignment.board_id WHERE file_hash = '" . $_GET['test-id'] .  "' ORDER BY `test_logs_upload`.`timestamp` DESC";
               echo '<script type="text/javascript">removeSearch();</script>';
             }
             else
             {
-              $sql = "Select * from test_logs inner join engineer_assignment on test_logs.board_id = engineer_assignment.board_id ORDER BY `test_logs`.`timestamp` DESC";
+              $sql = "Select * from test_logs_upload inner join engineer_assignment on test_logs_upload.board_id = engineer_assignment.board_id ORDER BY `test_logs_upload`.`timestamp` DESC";
             }
             $result = $conn->query($sql);
             $num_rows = $result->num_rows;
@@ -127,6 +124,19 @@ include_once("conn.php");
                   <i class='arrow circle up icon'></i>"
                   . $row["gbps_sent"]
                   . "</td>";
+			}
+			if (isset($_GET["test-id"]))
+            {
+              $sql = "Select * from test_logs_download inner join engineer_assignment on test_logs_download.board_id = engineer_assignment.board_id WHERE file_hash = '" . $_GET['test-id'] .  "' ORDER BY `test_logs_download`.`timestamp` DESC";
+              echo '<script type="text/javascript">removeSearch();</script>';
+            }
+            else
+            {
+              $sql = "Select * from test_logs_download inner join engineer_assignment on test_logs_download.board_id = engineer_assignment.board_id ORDER BY `test_logs_download`.`timestamp` DESC";
+            }
+            $result = $conn->query($sql);
+            $num_rows = $result->num_rows;
+            while ($row = mysqli_fetch_assoc($result)) {
               echo "<td>
                   <i class='arrow circle down icon'></i>"
                   . $row["gbps_received"]
@@ -136,12 +146,11 @@ include_once("conn.php");
                   . $row["peak_gbps"]
                   . "</td>";
               echo "<td>" . $row["board_id"] . "</td>";
-              echo "<td>" . $row["switchPortNumber"] . "</td>";
-              echo "<td>" . $row["switchIPAddress"] . "</td>";
-              echo "<td>" . $row["switchName"] . "</td>";
               echo "<td>
-                    <a href=\"/test-logs/" . $row["file_hash"] .
-                    "\" download>
+                    <a href=\"/test-logs/" . $row["file_hash"] . "_upload\" download>
+                    <i class='large save icon'></i>
+                    </a>
+					<a href=\"/test-logs/" . $row["file_hash"] . "_download\" download>
                     <i class='large save icon'></i>
                     </a>
                   </td>";
@@ -230,10 +239,8 @@ $(document).ready(function(){
         var download_to_append = "<td><i class='arrow circle down icon'></i>" + json_result[x][6] + "</td>"
         var peak_to_append = "<td><i class='line chart icon'></i>" + json_result[x][9] + "</td>"
         var mac_to_append = "<td>" + json_result[x][13] + "</td>"
-        var switchport_to_append = "<td>" + json_result[x][10] + "</td>";
-        var switchaddress_to_append = "<td>" + json_result[x][11] + "</td>";
-        var switchname_to_append = "<td>" + json_result[x][12] + "</td>";
-        var save_to_append = "<td><a href=\"/test-logs/" + json_result[x][1] + "\" download><i class='large save icon'></i></a></td>";
+        var save_to_append = "<td><a href=\"/test-logs/" + json_result[x][1] + "_upload\" download><i class='large save icon'></i></a></td>";
+		var save_to_append = "<td><a href=\"/test-logs/" + json_result[x][1] + "_download\" download><i class='large save icon'></i></a></td>";
         var full_string = "<tr>" + hash_to_append + "<td>" + formatted_time + "</td>" + "<td>" + formatted_date + "</td>" + engineer_to_append + upload_to_append + download_to_append + peak_to_append + mac_to_append + switchport_to_append + switchaddress_to_append + switchname_to_append + save_to_append + "</tr>";
 
       }

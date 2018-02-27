@@ -46,25 +46,21 @@ def run_script():
         gateway_mac = jdata['end']['host_information']['gateway_mac']
         gateway_ip = jdata['end']['host_information']['gateway_ip']
         peak = max(speed_interval_list)
+		direction = jdata['end']['test_information']['direction']
         #Set the time stamp to the server time
         timestamp_ = calendar.timegm(time.gmtime())
     	mac_address_q = "'" + mac_address + "'"
     	print mac_address_q
         #Convert from bps to mega bps
-        sent_gbps = sent_bps / 1000000
-        received_gbps = received_bps / 1000000
-        peak_gbps = peak / 1000000
-
+        sent_mbps = sent_bps / 1000000
+        received_mbps = received_bps / 1000000
+        peak_mbps = peak / 1000000
+		'''
         #Round Giga bps to two decial places
-        sent_gbps = round(sent_gbps, 2)
-        received_gbps = round(received_gbps, 2)
-        peak_gbps = round(peak_gbps, 2)
-        
-        r = requests.get('<API Address>')
-        switchPortNumber = ""
-        switchIpAddress = ""
-        switchName = ""
-
+        sent_mbps = round(sent_mbps, 2)
+        received_mbps = round(received_mbps, 2)
+        peak_mbps = round(peak_mbps, 2)
+		'''
         #In this loop we are inserting all the data into the database
         #In this loop we are inserting all the data into the database
 
@@ -74,29 +70,56 @@ def run_script():
                           passwd="db-pass",
                           db="db-name")
         x = conn.cursor()
-        if r.status_code != 200:
-                x.execute("INSERT INTO switch_information VALUES (%s, %s, %s)", (hash_value, gateway_mac, gateway_ip))
-        else:
-                returned = r.json()
-                switchPortNumber = returned['portNumber']
-                switchIpAddress =  returned['ipAddress']
-                switchName =  returned['switchName']
-
-        #Try Except statment to catch if the insert was sucsessful or not
+		
+		#Try Except statment to catch if the insert was sucsessful or not
         #If it was not then it rolls back
-        try:
-            x.execute("INSERT INTO test_logs VALUES (Null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (hash_value, timestamp_, connecting_to, test_duration, sent_gbps, received_gbps, mac_address, gateway_mac, gateway_ip, peak_gbps))
-            x.execute("SELECT engineer_email FROM engineer_assignment WHERE board_id = %s" % mac_address_q)
-            eng_email_select = x.fetchall()
+		if direction == "upload":
+			try:
+				x.execute("INSERT INTO test_logs_upload VALUES (Null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (hash_value, timestamp_, connecting_to, test_duration, sent_mbps, received_mbps, mac_address, gateway_mac, gateway_ip, peak_mbps))
+				'''
+				x.execute("SELECT engineer_email FROM engineer_assignment WHERE board_id = %s" % mac_address_q)
+				eng_email_select = x.fetchall()
 
-            email =  eng_email_select[0][0]
-            print email
-            conn.commit()
-        except:
-            conn.rollback()
-            #Close DB connection
-            conn.close()
+				email =  eng_email_select[0][0]
+				print email
+				'''
+				conn.commit()
+			except:
+				conn.rollback()
+				#Close DB connection
+				conn.close()
+				#Here is where we move the file into a perminant log directory
+				#Define path value including the file hash from the JSON
+				path_to_file = final_log_store + "/" + hash_value + "_upload"
+				#Move the file to the new directory
+				shutil.move(log_files + "/" + hash_value + "_Upload", path_to_file)
+				#Change the ownership of the file so that www-data is the owner. This
+				#allows for the JSON file downloads from the apache webserver to work
+				os.chown(path_to_file, pwd.getpwnam("www-data").pw_uid, grp.getgrnam("www-data").gr_gid)
+		elif direction == "download":
+			try:
+				x.execute("INSERT INTO test_logs_download VALUES (Null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (hash_value, timestamp_, connecting_to, test_duration, sent_mbps, received_mbps, mac_address, gateway_mac, gateway_ip, peak_mbps))
+				'''
+				x.execute("SELECT engineer_email FROM engineer_assignment WHERE board_id = %s" % mac_address_q)
+				eng_email_select = x.fetchall()
 
+				email =  eng_email_select[0][0]
+				print email
+				'''
+				conn.commit()
+			except:
+				conn.rollback()
+				#Close DB connection
+				conn.close()
+				#Here is where we move the file into a perminant log directory
+				#Define path value including the file hash from the JSON
+				path_to_file = final_log_store + "/" + hash_value + "_download"
+				#Move the file to the new directory
+				shutil.move(log_files + "/" + hash_value + "_Download", path_to_file)
+				#Change the ownership of the file so that www-data is the owner. This
+				#allows for the JSON file downloads from the apache webserver to work
+				os.chown(path_to_file, pwd.getpwnam("www-data").pw_uid, grp.getgrnam("www-data").gr_gid)
+		'''
     	EMAIL_FROM = "testing@testing.com"
     	EMAIL_RECEIVERS = email
         # Create message container - the correct MIME type is multipart/alternative.
@@ -126,7 +149,7 @@ def run_script():
             <br>
                 The Testing Team
             </html>
-        """ % (hash_value, sent_gbps, received_gbps, peak_gbps)
+        """ % (hash_value, sent_mbps, received_mbps, peak_mbps)
 
         # Record the MIME types of both parts - text/plain and text/html.
         email_body = MIMEText(html, 'html')
@@ -141,16 +164,8 @@ def run_script():
         # and message to send - here it is sent as one string.
         s.sendmail(EMAIL_FROM, EMAIL_RECEIVERS, msg.as_string())
         s.quit()
+		'''
 
-        #Here is where we move the file into a perminant log directory
-        #Define path value including the file hash from the JSON
-        path_to_file = final_log_store + "/" + hash_value
-        #Move the file to the new directory
-
-        shutil.move(log_files + "/" + hash_value, path_to_file)
-        #Change the ownership of the file so that www-data is the owner. This
-        #allows for the JSON file downloads from the apache webserver to work
-        os.chown(path_to_file, pwd.getpwnam("www-data").pw_uid, grp.getgrnam("www-data").gr_gid)
 
 #On boot we run this python script as a cron job which can only be done every
 #mintue so uing this look it allows the script to run every 15 seconds to

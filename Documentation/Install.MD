@@ -113,7 +113,22 @@ CREATE TABLE 'engineer_assignment' (
 );
 ```
 ```SQL
-CREATE TABLE 'test_logs' (
+CREATE TABLE 'test_logs_upload' (
+  'log_id' int(11) NOT NULL,
+  'file_hash' varchar(255) NOT NULL,
+  'timestamp' int(255) NOT NULL,
+  'connecting_to' varchar(255) NOT NULL,
+  'test_duration' varchar(255) NOT NULL,
+  'gbps_sent' varchar(255) NOT NULL,
+  'gbps_received' varchar(255) NOT NULL,
+  'board_id' varchar(255) NOT NULL,
+  'gateway_mac' varchar(255) DEFAULT NULL,
+  'peak_gbps' varchar(255) NOT NULL
+);
+```
+
+```SQL
+CREATE TABLE 'test_logs_download' (
   'log_id' int(11) NOT NULL,
   'file_hash' varchar(255) NOT NULL,
   'timestamp' int(255) NOT NULL,
@@ -132,7 +147,6 @@ On top of this the only other package needed is RSSH for the RCP copies between 
 The following scripts are needed on the IPerf log server:
 
 * json_server_side.py
-* switch_information_check.py
 
 To install: 
 
@@ -170,8 +184,3 @@ The following needs to be changed in json_server_side.py:
 
 * DB Information - For the DB connection the necessary information for the database being used need to be substituted such as database name, password, username etc.
 
-The following needs to be changed in switch_information_check.py;
-
-* DB Information - For the DB connection the necessary information for the database being used need to be substituted such as database name, password, username etc.
-* API Address - Address for the API call to obtain the switch information.
-* API Token - If there is any authorization tokens required for the API this has to be substituted in.

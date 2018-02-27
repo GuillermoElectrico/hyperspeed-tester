@@ -217,7 +217,7 @@ include_once("conn.php");
 			</thead>
 			<tbody>
 				<?php
-				$unused_sql = "SELECT DISTINCT test_logs.board_id FROM test_logs LEFT JOIN engineer_assignment ON test_logs.board_id = engineer_assignment.board_id WHERE engineer_assignment.engineer_id IS NULL";
+				$unused_sql = "SELECT DISTINCT test_logs_download.board_id FROM test_logs_download LEFT JOIN engineer_assignment ON test_logs_download.board_id = engineer_assignment.board_id WHERE engineer_assignment.engineer_id IS NULL";
 				$unused_result = $conn->query($unused_sql);
 				$unused_amount = $unused_result->num_rows;
 				if ($unused_amount == 0){
@@ -226,7 +226,7 @@ include_once("conn.php");
 				while ($row = mysqli_fetch_assoc($unused_result)) {
 					//Get the number of logs we have for the unused mac address
 					$board_mac = $row["board_id"];
-					$record_query = "SELECT COUNT(board_id) as record_amount, MAX(timestamp) as latest_record FROM test_logs WHERE board_id = '" . $board_mac . "'";
+					$record_query = "SELECT COUNT(board_id) as record_amount, MAX(timestamp) as latest_record FROM test_logs_download WHERE board_id = '" . $board_mac . "'";
 					$record_result = $conn->query($record_query);
 					$record_row = mysqli_fetch_row($record_result);
 					$amount_of_records = $record_row[0];

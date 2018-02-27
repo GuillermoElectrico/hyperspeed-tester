@@ -173,6 +173,8 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
     json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip}
+	##Add file contents direction test
+	json_file_contents["end"]["test_information"] = {"direction": "up"} 
     
     ##Dump the new JSON information into the file
     json.dump(json_file_contents, open(file_path, "w"))
@@ -187,6 +189,8 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
     json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip}
+	##Add file contents direction test
+	json_file_contents["end"]["test_information"] = {"direction": "down"}
     
     ##Dump the new JSON information into the file
     json.dump(json_file_contents, open(file_path, "w"))
@@ -207,7 +211,7 @@ def runTest() :
 
     ##Try and execute the IPerf test Upload. Specifies a timeout of 14 seconds for the IPerf connection
     try:
-        procId = subprocess.run(["iperf3", "-c", hostname, "-p", hostport, "-J", "-t", "15", "-Z" ], stdout=subprocess.PIPE, timeout=30)
+        procId = subprocess.run(["iperf3", "-c", hostname, "-p", hostport, "-J", "-t", "15", "-Z", "-A", "0" ], stdout=subprocess.PIPE, timeout=30)
         print hostname
     ##Raise an error if the timeout expires and re-run the test
     except subprocess.TimeoutExpired:
@@ -251,7 +255,7 @@ def runTest() :
 
     ##Try and execute the IPerf test Download. Specifies a timeout of 14 seconds for the IPerf connection
     try:
-        procId = subprocess.run(["iperf3", "-c", hostname, "-p", hostport, "-J", "-t", "15", "-Z", "-R" ], stdout=subprocess.PIPE, timeout=30)
+        procId = subprocess.run(["iperf3", "-c", hostname, "-p", hostport, "-J", "-t", "15", "-Z", "-R", "-A", "0" ], stdout=subprocess.PIPE, timeout=30)
         print hostname
     ##Raise an error if the timeout expires and re-run the test
     except subprocess.TimeoutExpired:

@@ -17,11 +17,11 @@ $value_pattern_range = $timestamp_entered + 86399;
 
 if ($date_search)
 {
-  $sql = ("SELECT * FROM test_logs INNER JOIN engineer_assignment ON test_logs.board_id = engineer_assignment.board_id WHERE connecting_to LIKE $value_pattern OR test_duration LIKE $value_pattern OR gbps_sent LIKE $value_pattern OR gbps_received LIKE $value_pattern OR test_logs.board_id LIKE $value_pattern OR engineer_name LIKE $value_pattern OR engineer_email LIKE $value_pattern OR file_hash LIKE $value_pattern OR timestamp BETWEEN $timestamp_entered AND $value_pattern_range ORDER BY timestamp DESC");
+  $sql = ("SELECT * FROM test_logs_download INNER JOIN engineer_assignment ON test_logs_download.board_id = engineer_assignment.board_id WHERE connecting_to LIKE $value_pattern OR test_duration LIKE $value_pattern OR gbps_sent LIKE $value_pattern OR gbps_received LIKE $value_pattern OR test_logs_download.board_id LIKE $value_pattern OR engineer_name LIKE $value_pattern OR engineer_email LIKE $value_pattern OR file_hash LIKE $value_pattern OR timestamp BETWEEN $timestamp_entered AND $value_pattern_range ORDER BY timestamp DESC");
 }
 else
 {
-  $sql = ("SELECT * FROM test_logs INNER JOIN engineer_assignment ON test_logs.board_id = engineer_assignment.board_id WHERE connecting_to LIKE $value_pattern OR test_duration LIKE $value_pattern OR gbps_sent LIKE $value_pattern OR gbps_received LIKE $value_pattern OR test_logs.board_id LIKE $value_pattern OR engineer_name LIKE $value_pattern OR engineer_email LIKE $value_pattern OR file_hash LIKE $value_pattern ORDER BY timestamp DESC");
+  $sql = ("SELECT * FROM test_logs_download INNER JOIN engineer_assignment ON test_logs_download.board_id = engineer_assignment.board_id WHERE connecting_to LIKE $value_pattern OR test_duration LIKE $value_pattern OR gbps_sent LIKE $value_pattern OR gbps_received LIKE $value_pattern OR test_logs_download.board_id LIKE $value_pattern OR engineer_name LIKE $value_pattern OR engineer_email LIKE $value_pattern OR file_hash LIKE $value_pattern ORDER BY timestamp DESC");
 }
 
 $result = $conn->query($sql);

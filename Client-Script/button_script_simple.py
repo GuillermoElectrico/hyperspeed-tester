@@ -76,6 +76,20 @@ while (1 == 1):
 					time.sleep(1)
 			ScreenOutput("No Shutdown", "")
 			time.sleep(3)
+		elif wiringpi2.digitalRead(5) == 0:
+			subprocess.call([script_folder + "/button_shell_script_simple.sh"])
+			ScreenOutput("Delete logs?", "<- Yes | No ->")
+			time.sleep(3)
+			while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
+				time.sleep(1)
+			if wiringpi2.digitalRead(5) == 0:
+				ScreenOutput("All logs deleted", "")
+				time.sleep(1)
+				os.system("sudo rm /home/iperf/*")
+				time.sleep(2)
+			else:
+				ScreenOutput("Nothing deleted", "")
+				time.sleep(3)
 		else:
 			subprocess.call([script_folder + "/button_shell_script_simple.sh"])
 			board_mac = get_mac() 
