@@ -105,40 +105,40 @@ We also made use of a basic database structure consisting of just two tables to 
 The following SQL snippets are below for both tables:
 
 ```SQL
-CREATE TABLE 'engineer_assignment' (
-  'engineer_id' int(11) NOT NULL,
-  'engineer_name' varchar(255) NOT NULL,
-  'engineer_email' varchar(255) NOT NULL,
-  'board_id' varchar(255) NOT NULL
+CREATE TABLE `engineer_assignment`(
+  `engineer_id` INT(11) NOT NULL,
+  `engineer_name` VARCHAR(255) NOT NULL,
+  `engineer_email` VARCHAR(255) NOT NULL,
+  `board_id` VARCHAR(255) NOT NULL
 );
 ```
 ```SQL
-CREATE TABLE 'test_logs_upload' (
-  'log_id' int(11) NOT NULL,
-  'file_hash' varchar(255) NOT NULL,
-  'timestamp' int(255) NOT NULL,
-  'connecting_to' varchar(255) NOT NULL,
-  'test_duration' varchar(255) NOT NULL,
-  'gbps_sent' varchar(255) NOT NULL,
-  'gbps_received' varchar(255) NOT NULL,
-  'board_id' varchar(255) NOT NULL,
-  'gateway_mac' varchar(255) DEFAULT NULL,
-  'peak_gbps' varchar(255) NOT NULL
+CREATE TABLE `test_logs_upload` (
+  `log_id` int(11) NOT NULL,
+  `file_hash` varchar(255) NOT NULL,
+  `timestamp` int(255) NOT NULL,
+  `connecting_to` varchar(255) NOT NULL,
+  `test_duration` varchar(255) NOT NULL,
+  `gbps_sent` varchar(255) NOT NULL,
+  `gbps_received` varchar(255) NOT NULL,
+  `board_id` varchar(255) NOT NULL,
+  `gateway_mac` varchar(255) DEFAULT NULL,
+  `peak_gbps` varchar(255) NOT NULL
 );
 ```
 
 ```SQL
-CREATE TABLE 'test_logs_download' (
-  'log_id' int(11) NOT NULL,
-  'file_hash' varchar(255) NOT NULL,
-  'timestamp' int(255) NOT NULL,
-  'connecting_to' varchar(255) NOT NULL,
-  'test_duration' varchar(255) NOT NULL,
-  'gbps_sent' varchar(255) NOT NULL,
-  'gbps_received' varchar(255) NOT NULL,
-  'board_id' varchar(255) NOT NULL,
-  'gateway_mac' varchar(255) DEFAULT NULL,
-  'peak_gbps' varchar(255) NOT NULL
+CREATE TABLE `test_logs_download` (
+  `log_id` int(11) NOT NULL,
+  `file_hash` varchar(255) NOT NULL,
+  `timestamp` int(255) NOT NULL,
+  `connecting_to` varchar(255) NOT NULL,
+  `test_duration` varchar(255) NOT NULL,
+  `gbps_sent` varchar(255) NOT NULL,
+  `gbps_received` varchar(255) NOT NULL,
+  `board_id` varchar(255) NOT NULL,
+  `gateway_mac` varchar(255) DEFAULT NULL,
+  `peak_gbps` varchar(255) NOT NULL
 );
 ```
 
