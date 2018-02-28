@@ -18,7 +18,7 @@ The script will perform the following checks to ensure adequate connectivity bef
 
 Once all three checks pass the IPerf test is performed. The Odroid board will perform the following command line IPerf command:
 ```Python
-iperf3 -c hostname -J -t 15 -P 10
+iperf3 -c hostname -J -t 15
 ```
 The above will run an iperf test with the server specified by the hostname on port 5201 for 15 seconds. -J signifies that we want the output of the test to be outputted into a file containing JSON information. We use this information in extracting the necessary values we would like. By default we use a user on the Odroid board called Iperf. Therefore the default location for the log files is /home/iperf. One of the main requirements is being able to later retrieve the results of a line test. As such we need a way to distinguish between the logs. For this we read in the contents of a particular log output, generate a hash from this data, and use that
 hash for the filename. As no two tests will be the same, for example timestamps differ, the hash should always be different. Due to the size of the MD5 hash we decided to take 10 characters of the hash only for the unique identification of each log.

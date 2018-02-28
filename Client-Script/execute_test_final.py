@@ -170,8 +170,10 @@ def copySCPfiles(hashed_file_name):
     try:
         ScreenOutput("Copying Test", "To Server")
         time.sleep(3)
-        hashed_file_path1 = log_files + "/" + hashed_file_name + "_Upload"
-		hashed_file_path2 = log_files + "/" + hashed_file_name + "_Download"
+        hashed_file_local_path1 = log_files + "/" + hashed_file_name + "_Upload"
+        hashed_file_local_path2 = log_files + "/" + hashed_file_name + "_Download"
+        hashed_file_remote_path1 = hashed_file_name + "_Upload"
+        hashed_file_remote_path2 = hashed_file_name + "_Download"
         ssh = SSHClient()
         ssh.load_system_host_keys()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -179,10 +181,10 @@ def copySCPfiles(hashed_file_name):
         scp = SCPClient(ssh.get_transport())
         ScreenOutput("Copying Test", "Upload")
         time.sleep(1)
-        scp.put(hashed_file_path, hashed_file_path1)
+        scp.put(hashed_file_local_path1, hashed_file_remote_path1)
         ScreenOutput("Copying Test", "Download")
         time.sleep(1)
-        scp.put(hashed_file_path, hashed_file_path2)
+        scp.put(hashed_file_local_path2, hashed_file_remote_path2)
         scp.close()
         ScreenOutput('Test Copied', 'To Server')
         time.sleep(1)
@@ -205,6 +207,7 @@ def get_dg_ip():
 ##Function will obtain the default gateway MAC address
 def get_dg_mac(gateway_ip): 
 
+    gateway_mac = ""
     ##Import the contents of the ARP table for reading
     arp_table = get_arp_table()
     ##Loop through each ARP entry to check whether the gateway address is present
@@ -268,12 +271,12 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     f.close()
 
     ##Load in the contents of the file and convert to a JSON object
-    #json_file_contents = json.loads(file_contents)
+    json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
     json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip, "CPE_ip": cpe_ip}
     json_file_contents["end"]["ookla_test"] = {"upload": ookla_results["upload"]}
 	##Add file contents direction test
-	json_file_contents["end"]["test_information"] = {"direction": "up"} 
+    json_file_contents["end"]["test_information"] = {"direction": "up"} 
     
     ##Dump the new JSON information into the file
     json.dump(json_file_contents, open(file_path, "w+"))
@@ -285,12 +288,12 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     f.close()
 
     ##Load in the contents of the file and convert to a JSON object
-    #json_file_contents = json.loads(file_contents)
+    json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
     json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip, "CPE_ip": cpe_ip}
     json_file_contents["end"]["ookla_test"] = {"download": ookla_results["download"]}
 	##Add file contents direction test
-	json_file_contents["end"]["test_information"] = {"direction": "down"} 
+    json_file_contents["end"]["test_information"] = {"direction": "down"} 
     
     ##Dump the new JSON information into the file
     json.dump(json_file_contents, open(file_path, "w+"))

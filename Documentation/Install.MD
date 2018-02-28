@@ -114,7 +114,7 @@ CREATE TABLE `engineer_assignment`(
 ```
 ```SQL
 CREATE TABLE `test_logs_upload`(
-  `log_id` INT(11) NOT NULL,
+  `log_id` INT(11) DEFAULT NULL,
   `file_hash` VARCHAR(255) NOT NULL,
   `timestamp` INT(255) NOT NULL,
   `connecting_to` VARCHAR(255) NOT NULL,
@@ -123,13 +123,14 @@ CREATE TABLE `test_logs_upload`(
   `gbps_received` VARCHAR(255) NOT NULL,
   `board_id` VARCHAR(255) NOT NULL,
   `gateway_mac` VARCHAR(255) DEFAULT NULL,
+  `gateway_ip` VARCHAR(255) NOT NULL,
   `peak_gbps` VARCHAR(255) NOT NULL
 );
 ```
 
 ```SQL
 CREATE TABLE `test_logs_download`(
-  `log_id` INT(11) NOT NULL,
+  `log_id` INT(11) DEFAULT NULL,
   `file_hash` VARCHAR(255) NOT NULL,
   `timestamp` INT(255) NOT NULL,
   `connecting_to` VARCHAR(255) NOT NULL,
@@ -138,6 +139,7 @@ CREATE TABLE `test_logs_download`(
   `gbps_received` VARCHAR(255) NOT NULL,
   `board_id` VARCHAR(255) NOT NULL,
   `gateway_mac` VARCHAR(255) DEFAULT NULL,
+  `gateway_ip` VARCHAR(255) NOT NULL,
   `peak_gbps` VARCHAR(255) NOT NULL
 );
 ```

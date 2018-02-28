@@ -46,7 +46,7 @@ def run_script():
         gateway_mac = jdata['end']['host_information']['gateway_mac']
         gateway_ip = jdata['end']['host_information']['gateway_ip']
         peak = max(speed_interval_list)
-		direction = jdata['end']['test_information']['direction']
+        direction = jdata['end']['test_information']['direction']
         #Set the time stamp to the server time
         timestamp_ = calendar.timegm(time.gmtime())
     	mac_address_q = "'" + mac_address + "'"
@@ -55,12 +55,7 @@ def run_script():
         sent_mbps = sent_bps / 1000000
         received_mbps = received_bps / 1000000
         peak_mbps = peak / 1000000
-		'''
-        #Round Giga bps to two decial places
-        sent_mbps = round(sent_mbps, 2)
-        received_mbps = round(received_mbps, 2)
-        peak_mbps = round(peak_mbps, 2)
-		'''
+
         #In this loop we are inserting all the data into the database
         #In this loop we are inserting all the data into the database
 
@@ -73,98 +68,43 @@ def run_script():
 		
 		#Try Except statment to catch if the insert was sucsessful or not
         #If it was not then it rolls back
-		if direction == "upload":
+        print direction
+        if direction == "up" :
 			try:
 				x.execute("INSERT INTO test_logs_upload VALUES (Null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (hash_value, timestamp_, connecting_to, test_duration, sent_mbps, received_mbps, mac_address, gateway_mac, gateway_ip, peak_mbps))
-				'''
-				x.execute("SELECT engineer_email FROM engineer_assignment WHERE board_id = %s" % mac_address_q)
-				eng_email_select = x.fetchall()
 
-				email =  eng_email_select[0][0]
-				print email
-				'''
 				conn.commit()
 			except:
+				print(x._last_executed)
 				conn.rollback()
 				#Close DB connection
 				conn.close()
-				#Here is where we move the file into a perminant log directory
-				#Define path value including the file hash from the JSON
-				path_to_file = final_log_store + "/" + hash_value + "_upload"
-				#Move the file to the new directory
-				shutil.move(log_files + "/" + hash_value + "_Upload", path_to_file)
-				#Change the ownership of the file so that www-data is the owner. This
-				#allows for the JSON file downloads from the apache webserver to work
-				os.chown(path_to_file, pwd.getpwnam("www-data").pw_uid, grp.getgrnam("www-data").gr_gid)
-		elif direction == "download":
+			#Here is where we move the file into a perminant log directory
+			#Define path value including the file hash from the JSON
+			path_to_file = final_log_store + "/" + hash_value + "_Upload"
+			#Move the file to the new directory
+			shutil.move(log_files + "/" + hash_value + "_Upload", path_to_file)
+			#Change the ownership of the file so that www-data is the owner. This
+			#allows for the JSON file downloads from the apache webserver to work
+			os.chown(path_to_file, pwd.getpwnam("www-data").pw_uid, grp.getgrnam("www-data").gr_gid)
+        elif direction == "down" :
 			try:
 				x.execute("INSERT INTO test_logs_download VALUES (Null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (hash_value, timestamp_, connecting_to, test_duration, sent_mbps, received_mbps, mac_address, gateway_mac, gateway_ip, peak_mbps))
-				'''
-				x.execute("SELECT engineer_email FROM engineer_assignment WHERE board_id = %s" % mac_address_q)
-				eng_email_select = x.fetchall()
 
-				email =  eng_email_select[0][0]
-				print email
-				'''
 				conn.commit()
 			except:
+				print(x._last_executed)
 				conn.rollback()
 				#Close DB connection
 				conn.close()
-				#Here is where we move the file into a perminant log directory
-				#Define path value including the file hash from the JSON
-				path_to_file = final_log_store + "/" + hash_value + "_download"
-				#Move the file to the new directory
-				shutil.move(log_files + "/" + hash_value + "_Download", path_to_file)
-				#Change the ownership of the file so that www-data is the owner. This
-				#allows for the JSON file downloads from the apache webserver to work
-				os.chown(path_to_file, pwd.getpwnam("www-data").pw_uid, grp.getgrnam("www-data").gr_gid)
-		'''
-    	EMAIL_FROM = "testing@testing.com"
-    	EMAIL_RECEIVERS = email
-        # Create message container - the correct MIME type is multipart/alternative.
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = "Test Result %s" % hash_value
-        msg['From'] = EMAIL_FROM
-        msg['To'] = EMAIL_RECEIVERS
-        html = """\
-        <html>
-            Greetings,
-            <br>
-            <br>
-                Your test ID link is:  <link to frontend>
-                <ul><li>
-                        Upload was: %s Mbps
-                    </li>
-                    <li>
-                        Download was: %s Mpbs
-                    </li>
-                    <li>
-                        Peak speed was: %s Mpbs
-                    </li>
-                </ul>
-            <br>
-                Thanks
-            <br>
-            <br>
-                The Testing Team
-            </html>
-        """ % (hash_value, sent_mbps, received_mbps, peak_mbps)
-
-        # Record the MIME types of both parts - text/plain and text/html.
-        email_body = MIMEText(html, 'html')
-        # Attach parts into message container.
-        # According to RFC 2046, the last part of a multipart message, in this case
-        # the HTML message, is best and preferred.
-        msg.attach(email_body)
-
-        # Send the message via local SMTP server.
-        s = smtplib.SMTP('email-location.com')
-        # sendmail function takes 3 arguments: sender's address, recipient's address
-        # and message to send - here it is sent as one string.
-        s.sendmail(EMAIL_FROM, EMAIL_RECEIVERS, msg.as_string())
-        s.quit()
-		'''
+			#Here is where we move the file into a perminant log directory
+			#Define path value including the file hash from the JSON
+			path_to_file = final_log_store + "/" + hash_value + "_Download"
+			#Move the file to the new directory
+			shutil.move(log_files + "/" + hash_value + "_Download", path_to_file)
+			#Change the ownership of the file so that www-data is the owner. This
+			#allows for the JSON file downloads from the apache webserver to work
+			os.chown(path_to_file, pwd.getpwnam("www-data").pw_uid, grp.getgrnam("www-data").gr_gid)
 
 
 #On boot we run this python script as a cron job which can only be done every
