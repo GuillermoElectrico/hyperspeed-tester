@@ -106,39 +106,39 @@ The following SQL snippets are below for both tables:
 
 ```SQL
 CREATE TABLE `engineer_assignment`(
-  `engineer_id` INT(11) NOT NULL,
+  `engineer_id` INT(11) DEFAULT NULL,
   `engineer_name` VARCHAR(255) NOT NULL,
   `engineer_email` VARCHAR(255) NOT NULL,
   `board_id` VARCHAR(255) NOT NULL
 );
 ```
 ```SQL
-CREATE TABLE `test_logs_upload` (
-  `log_id` int(11) NOT NULL,
-  `file_hash` varchar(255) NOT NULL,
-  `timestamp` int(255) NOT NULL,
-  `connecting_to` varchar(255) NOT NULL,
-  `test_duration` varchar(255) NOT NULL,
-  `gbps_sent` varchar(255) NOT NULL,
-  `gbps_received` varchar(255) NOT NULL,
-  `board_id` varchar(255) NOT NULL,
-  `gateway_mac` varchar(255) DEFAULT NULL,
-  `peak_gbps` varchar(255) NOT NULL
+CREATE TABLE `test_logs_upload`(
+  `log_id` INT(11) NOT NULL,
+  `file_hash` VARCHAR(255) NOT NULL,
+  `timestamp` INT(255) NOT NULL,
+  `connecting_to` VARCHAR(255) NOT NULL,
+  `test_duration` VARCHAR(255) NOT NULL,
+  `gbps_sent` VARCHAR(255) NOT NULL,
+  `gbps_received` VARCHAR(255) NOT NULL,
+  `board_id` VARCHAR(255) NOT NULL,
+  `gateway_mac` VARCHAR(255) DEFAULT NULL,
+  `peak_gbps` VARCHAR(255) NOT NULL
 );
 ```
 
 ```SQL
-CREATE TABLE `test_logs_download` (
-  `log_id` int(11) NOT NULL,
-  `file_hash` varchar(255) NOT NULL,
-  `timestamp` int(255) NOT NULL,
-  `connecting_to` varchar(255) NOT NULL,
-  `test_duration` varchar(255) NOT NULL,
-  `gbps_sent` varchar(255) NOT NULL,
-  `gbps_received` varchar(255) NOT NULL,
-  `board_id` varchar(255) NOT NULL,
-  `gateway_mac` varchar(255) DEFAULT NULL,
-  `peak_gbps` varchar(255) NOT NULL
+CREATE TABLE `test_logs_download`(
+  `log_id` INT(11) NOT NULL,
+  `file_hash` VARCHAR(255) NOT NULL,
+  `timestamp` INT(255) NOT NULL,
+  `connecting_to` VARCHAR(255) NOT NULL,
+  `test_duration` VARCHAR(255) NOT NULL,
+  `gbps_sent` VARCHAR(255) NOT NULL,
+  `gbps_received` VARCHAR(255) NOT NULL,
+  `board_id` VARCHAR(255) NOT NULL,
+  `gateway_mac` VARCHAR(255) DEFAULT NULL,
+  `peak_gbps` VARCHAR(255) NOT NULL
 );
 ```
 

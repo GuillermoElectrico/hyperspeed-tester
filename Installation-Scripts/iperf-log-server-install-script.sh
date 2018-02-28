@@ -16,6 +16,5 @@ mkdir /home/test-logs
 echo ******Copying scripts*******
 sleep 2
 wget -O /home/iperf-scripts/json_server_side.py https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Server-Script/json_server_side.py
-wget -O /home/iperf-scripts/switch_information_check.py https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Server-Script/switch_information_check.py
 echo *******Setup complete*******
 sleep 2

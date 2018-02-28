@@ -7,4 +7,6 @@
   $sql_statement->bind_param("s", $engineer_mac);
 
   $result = $sql_statement->execute();
+   // redirecciona a la página anterior
+   header("Location:admin.php?iddrs=" . $iddrs);
 ?>
