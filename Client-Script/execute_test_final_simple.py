@@ -20,6 +20,7 @@ from uuid import getnode as get_mac
 hostname = "X.X.X.X"
 hostport = "5201"
 log_files = "/home/iperf"
+hostweb = "X.X.X.X"
 
 #Define global variables
 sent_mbps = ""
@@ -156,6 +157,13 @@ def get_dg_mac(gateway_ip):
 	
 ##Function will take the returned JSON and append new required values on the end
 def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
+	##Grab the IP address of the CPE device
+    url_to_send = "http://" + hostweb + "/whats-my-ip.php"
+    try:
+        json_ip_address = requests.get(url_to_send).json()
+        cpe_ip = json_ip_address["ip"]
+    except:
+        cpe_ip = "Unknown"
 
 	##Obtain the MAC address of the board
     board_mac = get_mac()
@@ -172,9 +180,9 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     ##Load in the contents of the file and convert to a JSON object
     json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
-    json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip}
+    json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip, "CPE_ip": cpe_ip}
 	##Add file contents direction test
-	json_file_contents["end"]["test_information"] = {"direction": "up"} 
+    json_file_contents["end"]["test_information"] = {"direction": "up"} 
     
     ##Dump the new JSON information into the file
     json.dump(json_file_contents, open(file_path, "w"))
@@ -188,9 +196,9 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     ##Load in the contents of the file and convert to a JSON object
     json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
-    json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip}
+    json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip, "CPE_ip": cpe_ip}
 	##Add file contents direction test
-	json_file_contents["end"]["test_information"] = {"direction": "down"}
+    json_file_contents["end"]["test_information"] = {"direction": "down"}
     
     ##Dump the new JSON information into the file
     json.dump(json_file_contents, open(file_path, "w"))

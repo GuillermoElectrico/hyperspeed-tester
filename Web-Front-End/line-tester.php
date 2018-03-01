@@ -87,9 +87,11 @@ include_once("conn.php");
         <th>Time</th>
         <th>Date</th>
         <th>Engineer</th>
-        <th>Upload (Mbps)</th>
-        <th>Download (Mbps)</th>
-        <th>Peak (Mbps)</th>
+        <th>Upload iperf (Mbps)</th>
+        <th>Download iperf (Mbps)</th>
+        <th>Peak Download iperf (Mbps)</th>
+		<th>Upload Ookla (Mbps)</th>
+        <th>Download Ookla (Mbps)</th>
         <th>MAC Address</th>
         <th>JSON</th>
       </tr></thead>
@@ -98,15 +100,18 @@ include_once("conn.php");
             if (isset($_GET["test-id"]))
             {
               $sql = "Select * from test_logs_upload inner join engineer_assignment on test_logs_upload.board_id = engineer_assignment.board_id WHERE file_hash = '" . $_GET['test-id'] .  "' ORDER BY `test_logs_upload`.`timestamp` DESC";
+			  $sql2 = "Select * from test_logs_download inner join engineer_assignment on test_logs_download.board_id = engineer_assignment.board_id WHERE file_hash = '" . $_GET['test-id'] .  "' ORDER BY `test_logs_download`.`timestamp` DESC";
               echo '<script type="text/javascript">removeSearch();</script>';
             }
             else
             {
               $sql = "Select * from test_logs_upload inner join engineer_assignment on test_logs_upload.board_id = engineer_assignment.board_id ORDER BY `test_logs_upload`.`timestamp` DESC";
+			  $sql2 = "Select * from test_logs_download inner join engineer_assignment on test_logs_download.board_id = engineer_assignment.board_id ORDER BY `test_logs_download`.`timestamp` DESC";
             }
             $result = $conn->query($sql);
+			$result2 = $conn->query($sql2);
             $num_rows = $result->num_rows;
-            while ($row = mysqli_fetch_assoc($result)) {
+            while ($row = mysqli_fetch_assoc($result) and $row2 = mysqli_fetch_assoc($result2)) {
               echo "<tr>";
               echo "<td>"
                   . $row["file_hash"]
@@ -122,35 +127,30 @@ include_once("conn.php");
                   "</td>";
               echo "<td>
                   <i class='arrow circle up icon'></i>"
-                  . $row["gbps_sent"]
+                  . $row["mbps_sent"]
                   . "</td>";
-			}
-			if (isset($_GET["test-id"]))
-            {
-              $sql = "Select * from test_logs_download inner join engineer_assignment on test_logs_download.board_id = engineer_assignment.board_id WHERE file_hash = '" . $_GET['test-id'] .  "' ORDER BY `test_logs_download`.`timestamp` DESC";
-              echo '<script type="text/javascript">removeSearch();</script>';
-            }
-            else
-            {
-              $sql = "Select * from test_logs_download inner join engineer_assignment on test_logs_download.board_id = engineer_assignment.board_id ORDER BY `test_logs_download`.`timestamp` DESC";
-            }
-            $result = $conn->query($sql);
-            $num_rows = $result->num_rows;
-            while ($row = mysqli_fetch_assoc($result)) {
               echo "<td>
                   <i class='arrow circle down icon'></i>"
-                  . $row["gbps_received"]
+                  . $row2["mbps_received"]
                   . "</td>";
               echo "<td>
                   <i class='line chart icon'></i>"
-                  . $row["peak_gbps"]
+                  . $row2["peak_mbps"]
                   . "</td>";
-              echo "<td>" . $row["board_id"] . "</td>";
+			  echo "<td>
+                  <i class='arrow circle up icon'></i>"
+                  . $row["ookla_send"]
+                  . "</td>";
               echo "<td>
-                    <a href=\"/test-logs/" . $row["file_hash"] . "_upload\" download>
+                  <i class='arrow circle down icon'></i>"
+                  . $row2["ookla_received"]
+                  . "</td>";
+              echo "<td>" . $row2["board_id"] . "</td>";
+              echo "<td>
+                    <a href=\"/test-logs/" . $row2["file_hash"] . "_Upload\" download>
                     <i class='large save icon'></i>
                     </a>
-					<a href=\"/test-logs/" . $row["file_hash"] . "_download\" download>
+					<a href=\"/test-logs/" . $row2["file_hash"] . "_Download\" download>
                     <i class='large save icon'></i>
                     </a>
                   </td>";

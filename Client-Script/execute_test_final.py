@@ -35,6 +35,8 @@ hostweb = "X.X.X.X"
 sent_mbps = ""
 received_mbps = ""
 peak = ""
+ookla_upload = ""
+ookla_download = ""
 ############### Deals with screen initialisation on the board ###############
 # --LCD
 LCD_ROW = 2 # 16 Char
@@ -220,41 +222,51 @@ def get_dg_mac(gateway_ip):
 
 ##Function will perform another speed test as well for comparison using Ookla's speedtest.net
 def perform_ookla_test():
+    global ookla_upload
+    global ookla_download
     servers = []
     ScreenOutput("Performing Ookla", "Speedtest...")
     ookla = speedtest.Speedtest()
     ookla.get_servers(servers)
     ookla.get_best_server()
-    ookla_download = ookla.download() / 1000000
+    ScreenOutput('Speed Test Ookla', 'Upload...')
+    time.sleep(1)
     ookla_upload = ookla.upload() / 1000000
-    ookla_array = {}
-    ookla_array["download"] = ookla_download
-    ookla_array["upload"] = ookla_upload
-    return ookla_array
+    print ookla_upload
+    ScreenOutput('Speed Test Ookla', 'Download...')
+    time.sleep(1)
+    ookla_download = ookla.download() / 1000000
+    print ookla_download
+    ScreenOutput('Speed Test Ookla', 'Finished')
+    time.sleep(1)
+
+  
 
 ##Function will take the returned JSON and append new required values on the end
 def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
+    global ookla_upload
+    global ookla_download
 	##Grab the IP address of the CPE device
-    url_to_send = "http://" + hostweb + ":6729/whats-my-ip"
+    url_to_send = "http://" + hostweb + "/whats-my-ip.php"
     try:
         json_ip_address = requests.get(url_to_send).json()
         cpe_ip = json_ip_address["ip"]
     except:
         cpe_ip = "Unknown"
 
-    ##Perform an Ookla Speedtest with a 20 second timeout
+    ##Perform an Ookla Speedtest with a 60 second timeout
     ookla_results = {}
     signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(20)
+    signal.alarm(60)
     try:
         ookla_results = perform_ookla_test()
     except Exception as ex:
         if "timed_out" in ex:
-            ookla_results["download"] = ""
-            ookla_results["upload"] = ""
-        #else:
-		#	ookla_results["download"] = ""
-        #   ookla_results["upload"] = ""
+            ookla_upload = "-"
+            ookla_download = "-"
+        else:
+            ookla_upload = "-"
+            ookla_download = "-"
     finally:
         signal.alarm(0)
      
@@ -274,7 +286,7 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
     json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip, "CPE_ip": cpe_ip}
-    json_file_contents["end"]["ookla_test"] = {"upload": ookla_results["upload"]}
+    json_file_contents["end"]["ookla_test"] = {"ookla": ookla_upload}
 	##Add file contents direction test
     json_file_contents["end"]["test_information"] = {"direction": "up"} 
     
@@ -291,7 +303,7 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
     json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip, "CPE_ip": cpe_ip}
-    json_file_contents["end"]["ookla_test"] = {"download": ookla_results["download"]}
+    json_file_contents["end"]["ookla_test"] = {"ookla": ookla_download}
 	##Add file contents direction test
     json_file_contents["end"]["test_information"] = {"direction": "down"} 
     
@@ -308,10 +320,10 @@ def runTest() :
     global hostport
     global peak
 
-    ScreenOutput('Speed Test', 'Executing...')
+    ScreenOutput('Speed Test iperf', 'Executing...')
     time.sleep(1)
 	
-    ScreenOutput('Speed Test', 'Upload...')
+    ScreenOutput('Speed Test iperf', 'Upload...')
     time.sleep(1)
 
     ##Try and execute the IPerf test Upload. Specifies a timeout of 14 seconds for the IPerf connection
@@ -320,7 +332,7 @@ def runTest() :
         print hostname
     ##Raise an error if the timeout expires and re-run the test
     except subprocess.TimeoutExpired:
-        ScreenOutput('Speed Test', 'Failed')
+        ScreenOutput('Speed Test iperf', 'Failed')
         time.sleep(3)
         executeTesting()
     ##Take the stdout and convert to JSON from the executed command
@@ -355,7 +367,7 @@ def runTest() :
     sent_mbps = sent_bps / 1000000
     print str(sent_mbps)
 	
-    ScreenOutput('Speed Test', 'Download...')
+    ScreenOutput('Speed Test iperf', 'Download...')
     time.sleep(1)
 
     ##Try and execute the IPerf test Download. Specifies a timeout of 14 seconds for the IPerf connection
@@ -364,7 +376,7 @@ def runTest() :
         print hostname
     ##Raise an error if the timeout expires and re-run the test
     except subprocess.TimeoutExpired:
-        ScreenOutput('Speed Test', 'Failed')
+        ScreenOutput('Speed Test iperf', 'Failed')
         time.sleep(3)
         executeTesting()
     ##Take the stdout and convert to JSON from the executed command
@@ -407,7 +419,7 @@ def runTest() :
     received_mbps = received_bps / 1000000
     print str(received_mbps)
 	
-    ScreenOutput('Speed Test', 'Finished')
+    ScreenOutput('Speed Test iperf', 'Finished')
     time.sleep(1)
 
     ##Read in the contents of the file in order to generate a hash of the data
@@ -444,7 +456,7 @@ def executeTesting():
     wiringpi2.digitalWrite(LED7,0)
 
     ##Display that the test is starting
-    ScreenOutput('Starting', 'Speed Test')
+    ScreenOutput('Starting', 'Speed Test iperf')
     time.sleep(2)
     ##Execute the PingHome function in order to check whether there is connectivity to the IPerf Server
     connectionStatus = pingHome()

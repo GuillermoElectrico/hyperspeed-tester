@@ -217,7 +217,7 @@ include_once("conn.php");
 			</thead>
 			<tbody>
 				<?php
-				$unused_sql = "SELECT DISTINCT test_logs_download.board_id FROM test_logs_download LEFT JOIN engineer_assignment ON test_logs_download.board_id = engineer_assignment.board_id WHERE engineer_assignment.engineer_id IS NULL";
+				$unused_sql = "SELECT DISTINCT test_logs_download.board_id FROM test_logs_download LEFT JOIN engineer_assignment ON test_logs_download.board_id = engineer_assignment.board_id WHERE engineer_assignment.board_id IS NULL";
 				$unused_result = $conn->query($unused_sql);
 				$unused_amount = $unused_result->num_rows;
 				if ($unused_amount == 0){

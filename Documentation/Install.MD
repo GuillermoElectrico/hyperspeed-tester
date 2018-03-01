@@ -68,29 +68,6 @@ To install with the script go to the 'iperf-server-install-script.sh' in Install
 	3. Run the iperf-server-install-script.sh file 
 	
 Of importance as well is the cron jobs that are run on the server. The required ones can be found in Server-Script.
-
-## Whats My Ip Server Installation
-The whats-my-ip server has a relatively small footprint in terms of required packages. The only packages needed are the rssh.
-
-To install with the script go to the 'whats-my-ip-server-install-script.sh' in Installation-Scripts
-
-	1. Copy the script to server - wget https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Installation-Scripts/whats-my-ip-server-install-script.sh
-
-	2. Chmod file so that you can run it 'chmod u+x whats-my-ip-server-install-script.sh'
-
-	3. Run the whats-my-ip-server-install-script.sh file 
-
-In addition to the required applications the following scripts need to be on the server:
-
-* whats_my_ip.py
-* whats-my-ip.conf
-* whats-my-ip.wsgi
-
-The script above is the flask application that returns in JSON format the IP address the request was from. In other words the clients address.
-
-As we have moved to using WSGI with apache WSGI needs to be configured to run the Flask application. The whats-my-ip.conf file needs to put into the /etc/apache2/sites-available folder. This is a folder that contains the modules Apache2 can include, in our case the Flask application. The WSGI is referenced within the file and tells apache that when it receives a request to the specific URL in the configuration to use the information in the WSGI file. The WSGI in turn references the Flask python application. 
-
-Once the whats-my-ip.conf file is added to the sites-available folder in the Apache2 directory, a2ensite whats-my-ip needs to be run. This will tell Apache2 to use this site when it is loaded and therefore allow the application to be accessed over the specified port. Once the command is run Apache2 can be restarted for the changes to take effect.
 	
 ## IPerf Log Server Installation
 The IPerf log server is where things are a bit more tricky. This server store the logs for the tests along with the front-end interface to display them. For the server we have used a simple LAMP deployment (Apache, MySQL, PHP), however this can be changed. As such the installation guide for LAMP stack installation on Ubuntu should be followed here:
@@ -119,12 +96,13 @@ CREATE TABLE `test_logs_upload`(
   `timestamp` INT(255) NOT NULL,
   `connecting_to` VARCHAR(255) NOT NULL,
   `test_duration` VARCHAR(255) NOT NULL,
-  `gbps_sent` VARCHAR(255) NOT NULL,
-  `gbps_received` VARCHAR(255) NOT NULL,
+  `mbps_sent` VARCHAR(255) NOT NULL,
+  `mbps_received` VARCHAR(255) NOT NULL,
   `board_id` VARCHAR(255) NOT NULL,
   `gateway_mac` VARCHAR(255) DEFAULT NULL,
   `gateway_ip` VARCHAR(255) NOT NULL,
-  `peak_gbps` VARCHAR(255) NOT NULL
+  `peak_mbps` VARCHAR(255) NOT NULL,
+  `ookla_send` VARCHAR(255) NOT NULL,
 );
 ```
 
@@ -135,12 +113,13 @@ CREATE TABLE `test_logs_download`(
   `timestamp` INT(255) NOT NULL,
   `connecting_to` VARCHAR(255) NOT NULL,
   `test_duration` VARCHAR(255) NOT NULL,
-  `gbps_sent` VARCHAR(255) NOT NULL,
-  `gbps_received` VARCHAR(255) NOT NULL,
+  `mbps_sent` VARCHAR(255) NOT NULL,
+  `mbps_received` VARCHAR(255) NOT NULL,
   `board_id` VARCHAR(255) NOT NULL,
   `gateway_mac` VARCHAR(255) DEFAULT NULL,
   `gateway_ip` VARCHAR(255) NOT NULL,
-  `peak_gbps` VARCHAR(255) NOT NULL
+  `peak_mbps` VARCHAR(255) NOT NULL,
+  `ookla_received` VARCHAR(255) NOT NULL
 );
 ```
 
@@ -180,7 +159,7 @@ The scripts on this repository use placeholders for various values that need to 
 * scpport - The port of the log server that upload tests results.
 * scpuser - The user is used to copy the files to the log server.
 * scppass - The password is used to copy the files to the log server.
-* hostweb - The hostname of the web server to obtain the external IP.
+* hostweb - The hostname of the web server to obtain the external IP in json format (use whats-mi-ip.php include in Web-Front-End folder).
 
 The following needs to be changed in json_server_side.py:
 

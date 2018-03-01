@@ -15,8 +15,8 @@ from email.mime.multipart import MIMEMultipart
 # inserts it into the mySQL database, stores the log file in another directory
 # and removes the old file.
 
-log_files = "/home/iperf"
-final_log_store = "/home/test-logs"
+log_files = "/home/pi"
+final_log_store = "/var/www/html/test-logs"
 
 #The single function that runs all
 def run_script():
@@ -46,6 +46,7 @@ def run_script():
         gateway_mac = jdata['end']['host_information']['gateway_mac']
         gateway_ip = jdata['end']['host_information']['gateway_ip']
         peak = max(speed_interval_list)
+        ookla_mbps = jdata['end']['ookla_test']['ookla']
         direction = jdata['end']['test_information']['direction']
         #Set the time stamp to the server time
         timestamp_ = calendar.timegm(time.gmtime())
@@ -55,6 +56,12 @@ def run_script():
         sent_mbps = sent_bps / 1000000
         received_mbps = received_bps / 1000000
         peak_mbps = peak / 1000000
+		
+		#Round mega bps to two decimal places
+        sent_mbps = round(sent_mbps, 2)
+        received_mbps = round(received_mbps, 2)
+        peak_mbps = round(peak_mbps, 2)
+        ookla_mbps = round(ookla_mbps, 2)
 
         #In this loop we are inserting all the data into the database
         #In this loop we are inserting all the data into the database
@@ -71,7 +78,7 @@ def run_script():
         print direction
         if direction == "up" :
 			try:
-				x.execute("INSERT INTO test_logs_upload VALUES (Null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (hash_value, timestamp_, connecting_to, test_duration, sent_mbps, received_mbps, mac_address, gateway_mac, gateway_ip, peak_mbps))
+				x.execute("INSERT INTO test_logs_upload VALUES (Null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (hash_value, timestamp_, connecting_to, test_duration, sent_mbps, received_mbps, mac_address, gateway_mac, gateway_ip, peak_mbps, ookla_mbps))
 
 				conn.commit()
 			except:
@@ -89,7 +96,7 @@ def run_script():
 			os.chown(path_to_file, pwd.getpwnam("www-data").pw_uid, grp.getgrnam("www-data").gr_gid)
         elif direction == "down" :
 			try:
-				x.execute("INSERT INTO test_logs_download VALUES (Null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (hash_value, timestamp_, connecting_to, test_duration, sent_mbps, received_mbps, mac_address, gateway_mac, gateway_ip, peak_mbps))
+				x.execute("INSERT INTO test_logs_download VALUES (Null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (hash_value, timestamp_, connecting_to, test_duration, sent_mbps, received_mbps, mac_address, gateway_mac, gateway_ip, peak_mbps, ookla_mbps))
 
 				conn.commit()
 			except:
