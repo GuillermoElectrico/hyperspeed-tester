@@ -160,7 +160,7 @@ include_once("conn.php");
           ?>
       </tbody>
       <tfoot>
-        <tr><th colspan="9">
+        <tr><th colspan="11">
           <div class="ui grid">
             <div class="four wide column center aligned">
                 <p><i class="archive icon"></i><b class="num_row_amount"><?php echo $num_rows; ?></b> Test Results</p>

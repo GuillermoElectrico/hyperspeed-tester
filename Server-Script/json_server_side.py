@@ -61,7 +61,6 @@ def run_script():
         sent_mbps = round(sent_mbps, 2)
         received_mbps = round(received_mbps, 2)
         peak_mbps = round(peak_mbps, 2)
-        ookla_mbps = round(ookla_mbps, 2)
 
         #In this loop we are inserting all the data into the database
         #In this loop we are inserting all the data into the database

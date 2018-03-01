@@ -159,7 +159,7 @@ The scripts on this repository use placeholders for various values that need to 
 * scpport - The port of the log server that upload tests results.
 * scpuser - The user is used to copy the files to the log server.
 * scppass - The password is used to copy the files to the log server.
-* hostweb - The hostname of the web server to obtain the external IP in json format (use whats-mi-ip.php include in Web-Front-End folder).
+* hostweb - The hostname of the web server to obtain the external CPE IP in json format (use whats-mi-ip.php include in Web-Front-End folder).
 
 The following needs to be changed in json_server_side.py:
 

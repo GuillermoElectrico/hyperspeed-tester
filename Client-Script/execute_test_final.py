@@ -232,10 +232,12 @@ def perform_ookla_test():
     ScreenOutput('Speed Test Ookla', 'Upload...')
     time.sleep(1)
     ookla_upload = ookla.upload() / 1000000
+    ookla_upload = round(ookla_upload, 2)
     print ookla_upload
     ScreenOutput('Speed Test Ookla', 'Download...')
     time.sleep(1)
     ookla_download = ookla.download() / 1000000
+    ookla_download = round(ookla_download, 2)
     print ookla_download
     ScreenOutput('Speed Test Ookla', 'Finished')
     time.sleep(1)
