@@ -161,6 +161,9 @@ The scripts on this repository use placeholders for various values that need to 
 * scppass - The password is used to copy the files to the log server.
 * hostweb - The hostname of the web server to obtain the external CPE IP in json format (use whats-mi-ip.php include in Web-Front-End folder).
 
+If you want to test against a specific server modify in execute_test_final.py (to compare results if there is internet)
+* servers = []
+
 The following needs to be changed in json_server_side.py:
 
 * DB Information - For the DB connection the necessary information for the database being used need to be substituted such as database name, password, username etc.

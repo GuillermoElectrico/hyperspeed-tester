@@ -31,6 +31,11 @@ scpuser = "username"
 scppass = "password"
 hostweb = "X.X.X.X"
 
+## Seedtest Ookla
+servers = []
+# If you want to test against a specific server
+# servers = [1234]
+
 #Define global variables
 sent_mbps = ""
 received_mbps = ""
@@ -224,7 +229,6 @@ def get_dg_mac(gateway_ip):
 def perform_ookla_test():
     global ookla_upload
     global ookla_download
-    servers = []
     ScreenOutput("Performing Ookla", "Speedtest...")
     ookla = speedtest.Speedtest()
     ookla.get_servers(servers)
@@ -264,11 +268,11 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
         ookla_results = perform_ookla_test()
     except Exception as ex:
         if "timed_out" in ex:
-            ookla_upload = "-"
-            ookla_download = "-"
+            ookla_upload = "---"
+            ookla_download = "---"
         else:
-            ookla_upload = "-"
-            ookla_download = "-"
+            ookla_upload = "---"
+            ookla_download = "---"
     finally:
         signal.alarm(0)
      
