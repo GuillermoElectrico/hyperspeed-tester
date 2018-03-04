@@ -130,6 +130,8 @@ def pingHome():
 ##Function performs a test against the FTP socket to ensure the FTP service is accessible on the server
 def testSCPSocket() :
     #check ftp is running on the host by established a socket on port 21. Set the timeout for the socket to 3 seconds
+    ScreenOutput('SFTP Test', 'Executing...')
+    time.sleep(1)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(3)
     result = sock.connect_ex((scphost, int(scpport)))
@@ -150,9 +152,11 @@ def testSCPSocket() :
         executeTesting()
         return False
 
-##Function performs a check against the default IPerf port 5201 to ensure it is up
+##Function performs a check against the default IPerf port hostport to ensure it is up
 def testIperfSocket() :
-    #check iperf is running on the host by establishing the socket the port 5201
+    #check iperf is running on the host by establishing the socket the port hostport
+    ScreenOutput('Iperf Connection', 'Executing...')
+    time.sleep(1)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(3)
     result = sock.connect_ex((hostname, int(hostport)))
