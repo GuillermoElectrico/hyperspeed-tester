@@ -42,6 +42,7 @@ received_mbps = ""
 peak = ""
 ookla_upload = ""
 ookla_download = ""
+ookla_test = False
 ############### Deals with screen initialisation on the board ###############
 # --LCD
 LCD_ROW = 2 # 16 Char
@@ -256,6 +257,7 @@ def perform_ookla_test():
 def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     global ookla_upload
     global ookla_download
+    global ookla_test
 	##Grab the IP address of the CPE device
     url_to_send = "http://" + hostweb + "/whats-my-ip.php"
     try:
@@ -266,11 +268,13 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
 
     ##Perform an Ookla Speedtest with a 60 second timeout
     ookla_results = {}
+    ookla_test = True
     signal.signal(signal.SIGALRM, timeout_handler)
     signal.alarm(60)
     try:
         ookla_results = perform_ookla_test()
     except Exception as ex:
+        ookla_test = False
         if "timed_out" in ex:
             ookla_upload = "---"
             ookla_download = "---"
@@ -456,6 +460,9 @@ def executeTesting():
     global sent_mbps
     global received_mbps
     global peak
+    global ookla_upload
+    global ookla_download
+    global ookla_test
 	
     wiringpi2.digitalWrite(LED1,0)
     wiringpi2.digitalWrite(LED2,0)
@@ -466,7 +473,7 @@ def executeTesting():
     wiringpi2.digitalWrite(LED7,0)
 
     ##Display that the test is starting
-    ScreenOutput('Starting', 'Speed Test iperf')
+    ScreenOutput('Starting', 'Speed Test')
     time.sleep(2)
     ##Execute the PingHome function in order to check whether there is connectivity to the IPerf Server
     connectionStatus = pingHome()
@@ -509,14 +516,22 @@ def executeTesting():
             ScreenOutput('Test ID', hash_file)
             time.sleep(5)
             ##Display the upload speed extracted from the JSON file
-            ScreenOutput('Upload:', str(round(sent_mbps, 2)) + " Mbps" )
+            ScreenOutput('Upload iperf:', str(round(sent_mbps, 2)) + " Mbps" )
             time.sleep(2)
             ##Display the download speed extracted from the JSON file
-            ScreenOutput('Download:', str(round(received_mbps, 2)) + " Mbps")
+            ScreenOutput('Download iperf:', str(round(received_mbps, 2)) + " Mbps")
             time.sleep(2)
             ##Display the download speed extracted from the JSON file
             ScreenOutput('Peak Download:', str(round(peak, 2)) + " Mbps")
             time.sleep(2)
+            if ookla_test == True :
+				##Display the upload speed 
+				ScreenOutput('Upload ookla:', str(round(ookla_upload, 2)) + " Mbps" )
+				time.sleep(2)
+				##Display the download speed 
+				ScreenOutput('Download ookla:', str(round(ookla_download, 2)) + " Mbps")
+				time.sleep(2)
+
     else:
         ##If the ping test fails meaning no connectivity to the IPerf server then restart the test again
         ScreenOutput('Test Failed', 'Retrying...')

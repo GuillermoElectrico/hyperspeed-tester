@@ -31,6 +31,30 @@ In addition to the necessary packages the following scripts need to be included 
 
 By default all of these are stored in the /home/iperf-scripts folder. All of the necessary packages for the Odroid board can be found in Client-Script. They are all installed as part of the install script and do not need to be manually put on there.
 
+## Odroid Board Installation ookla (Only test to speedtest by ookla servers. Perfect to test networks with only Internet access without remote log access or iperf server. Example: use public networks)
+The necessary files and packages are included in the install script. The script is a very basic method to list the required packages and install them. It is in no way indestructible. In the event of issues the packages can be manually installed. On top of the packages there are a couple of directories we use by default:
+
+* /home/iperf-scripts
+
+These can be changed freely but will be created in the install script.
+
+To install with the script go to the 'odroid-ookla-install_script.sh' in Installation-Scripts
+
+	1. Copy the script to odroid board - wget https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Installation-Scripts/odroid-ookla-install_script.sh
+
+	2. Chmod file so that you can run it 'chmod u+x odroid-ookla-install_script.sh'
+
+	3. Run the odroid-ookla-install_script.sh file
+	
+In addition to the necessary packages the following scripts need to be included on the Odroid board:
+
+* boot.py
+* button_script_ookla.py
+* button_shell_script_ookla.sh
+* execute_test_final_ookla.py
+
+By default all of these are stored in the /home/iperf-scripts folder. All of the necessary packages for the Odroid board can be found in Client-Script. They are all installed as part of the install script and do not need to be manually put on there.
+
 ## Odroid Board Installation
 The necessary files and packages are included in the install script. The script is a very basic method to list the required packages and install them. It is in no way indestructible. In the event of issues the packages can be manually installed. On top of the packages there are a couple of directories we use by default:
 
