@@ -80,6 +80,31 @@ In addition to the necessary packages the following scripts need to be included 
 
 By default all of these are stored in the /home/iperf-scripts folder. All of the necessary packages for the Odroid board can be found in Client-Script. They are all installed as part of the install script and do not need to be manually put on there.
 
+## Odroid Board Installation dual server (especial version for Euskal Enconter, 2 server iperf3 selectable via button)
+The necessary files and packages are included in the install script. The script is a very basic method to list the required packages and install them. It is in no way indestructible. In the event of issues the packages can be manually installed. On top of the packages there are a couple of directories we use by default:
+
+* /home/iperf-scripts
+
+These can be changed freely but will be created in the install script.
+
+To install with the script go to the 'odroid-ookla-install_script.sh' in Installation-Scripts
+
+	1. Copy the script to odroid board - wget https://raw.githubusercontent.com/GuillermoElectrico/hyperspeed-tester/master/Installation-Scripts/odroid-dual-install_script.sh
+
+	2. Chmod file so that you can run it 'chmod u+x odroid-dual-install_script.sh'
+
+	3. Run the odroid-dual-install_script.sh file
+	
+In addition to the necessary packages the following scripts need to be included on the Odroid board:
+
+* boot.py
+* button_script_doble_host.py
+* button_shell_script_doble_host.sh
+* execute_test_final_doble_host1.py
+* execute_test_final_doble_host2.py
+
+By default all of these are stored in the /home/iperf-scripts folder. All of the necessary packages for the Odroid board can be found in Client-Script. They are all installed as part of the install script and do not need to be manually put on there.
+
 ## IPerf Server Installation 
 The IPerf server has a relatively small footprint in terms of required packages. The only packages needed are the IPerf.
 
