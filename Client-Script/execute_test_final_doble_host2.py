@@ -108,7 +108,7 @@ def timeout_handler(num, stack):
     
 ##Function performs a ping test against the server to ensure that it is accessible
 def pingHome():
-    ScreenOutput('Ping Test Server2', 'Executing...')
+    ScreenOutput('Ping Test Core2', 'Executing...')
     time.sleep(1)
     ##Perform an OS command to execute the ping test
     response = os.system("ping -c 2 " + hostname)
@@ -119,12 +119,12 @@ def pingHome():
     if response == 0:
       print hostname, 'is up!'
       status = True
-      ScreenOutput('Ping Test Server2', 'Succesful')
+      ScreenOutput('Ping Test Core2', 'Succesful')
       time.sleep(1)
     else:
       print hostname, 'is down!'
       status = False
-      ScreenOutput('Ping Test Server2', 'Unsuccessful')
+      ScreenOutput('Ping Test Core2', 'Unsuccessful')
       time.sleep(3)
     return status
 
@@ -473,7 +473,7 @@ def executeTesting():
     wiringpi2.digitalWrite(LED7,0)
 
     ##Display that the test is starting
-    ScreenOutput('Starting', 'Speed Test')
+    ScreenOutput('Starting', 'Speed Test Core2')
     time.sleep(2)
     ##Execute the PingHome function in order to check whether there is connectivity to the IPerf Server
     connectionStatus = pingHome()

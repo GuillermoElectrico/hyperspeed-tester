@@ -51,72 +51,72 @@ def ScreenOutput(TopLine, BottomLine):
 
 while (1 == 1):
     if wiringpi2.digitalRead(5) == 0:
-        ScreenOutput("Stopping Script", "Please Wait...")
+        ScreenOutput("Stopping Scripts", "Please Wait...")
         ##Launch shell script to terminate any running testing scripts
         subprocess.call([script_folder + "/button_shell_script_doble_host.sh"])
         time.sleep(3)
-        ScreenOutput("Select server iperf", "<- Server1 | Server2 ->")
+        ScreenOutput("Select Server", "<-Core1||Core2->")
         time.sleep(3)
         while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
             time.sleep(1)
-        if wiringpi2.digitalRead(6) == 0:
+        if wiringpi2.digitalRead(5) == 0:
             ScreenOutput("Restart Script1", "Please Wait...")
             time.sleep(3)
             os.system("python " + script_folder + "/execute_test_final_doble_host1.py > /dev/null 2>&1 &")
-		elif wiringpi2.digitalRead(5) == 0:
+        elif wiringpi2.digitalRead(6) == 0:
             ScreenOutput("Restart Script2", "Please Wait...")
             time.sleep(3)
             os.system("python " + script_folder + "/execute_test_final_doble_host2.py > /dev/null 2>&1 &")
     elif wiringpi2.digitalRead(6) == 0:
-		time.sleep(3)
-		if wiringpi2.digitalRead(6) == 0:
-			subprocess.call([script_folder + "/button_shell_script_doble_host.sh"])
-			ScreenOutput("Shutdown?", "<- Yes | No ->")
-			time.sleep(3)
-			while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
-				time.sleep(1)
-			if wiringpi2.digitalRead(5) == 0:
-				ScreenOutput("Shutting Down", "")
-				time.sleep(1)
-				os.system("sudo shutdown now")
-				time.sleep(1)
-				while (1 == 1):
-					time.sleep(1)
-			ScreenOutput("No Shutdown", "")
-			time.sleep(3)
-		elif wiringpi2.digitalRead(5) == 0:
-			subprocess.call([script_folder + "/button_shell_script_simple_doble_host.sh"])
-			ScreenOutput("Delete logs?", "<- Yes | No ->")
-			time.sleep(3)
-			while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
-				time.sleep(1)
-			if wiringpi2.digitalRead(5) == 0:
-				ScreenOutput("All logs deleted", "")
-				time.sleep(1)
-				os.system("sudo rm /home/iperf/*")
-				time.sleep(2)
-			else:
-				ScreenOutput("Nothing deleted", "")
-				time.sleep(3)
-		else:
-			subprocess.call([script_folder + "/button_shell_script_doble_host.sh"])
-			board_mac = get_mac() 
-			IPAddr = netifaces.ifaddresses('eth0')[netifaces.AF_INET][0]['addr'] 
-			formatted_board_mac = str(''.join(("%012X" % board_mac)[i:i+2] for i in range(0, 12, 2)))
+        time.sleep(3)
+        if wiringpi2.digitalRead(6) == 0:
+            subprocess.call([script_folder + "/button_shell_script_doble_host.sh"])
+            ScreenOutput("Shutdown?", "<- Yes  |  No ->")
+            time.sleep(3)
+            while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
+                time.sleep(1)
+            if wiringpi2.digitalRead(5) == 0:
+                ScreenOutput("Shutting Down", "")
+                time.sleep(1)
+                os.system("sudo shutdown now")
+                time.sleep(1)
+                while (1 == 1):
+                    time.sleep(1)
+            ScreenOutput("No Shutdown", "")
+            time.sleep(3)
+        elif wiringpi2.digitalRead(5) == 0:
+            subprocess.call([script_folder + "/button_shell_script_doble_host.sh"])
+            ScreenOutput("Delete logs?", "<- Yes  |  No ->")
+            time.sleep(3)
+            while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
+                time.sleep(1)
+            if wiringpi2.digitalRead(5) == 0:
+                ScreenOutput("All logs deleted", "")
+                time.sleep(1)
+                os.system("sudo rm /home/iperf/*")
+                time.sleep(2)
+            else:
+                ScreenOutput("Nothing deleted", "")
+                time.sleep(3)
+        else:
+            subprocess.call([script_folder + "/button_shell_script_doble_host.sh"])
+            board_mac = get_mac() 
+            IPAddr = netifaces.ifaddresses('eth0')[netifaces.AF_INET][0]['addr'] 
+            formatted_board_mac = str(''.join(("%012X" % board_mac)[i:i+2] for i in range(0, 12, 2)))
 			#firstpart, secondpart = formatted_board_mac[:len(formatted_board_mac)/2], formatted_board_mac[len(formatted_board_mac)/2:]
-			ScreenOutput(formatted_board_mac, str(IPAddr))
-			time.sleep(5)
-			while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
-				time.sleep(1)
-        ScreenOutput("Select server iperf", "<- Server1 | Server2 ->")
+            ScreenOutput(formatted_board_mac, str(IPAddr))
+            time.sleep(5)
+            while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
+                time.sleep(1)
+        ScreenOutput("Select Server", "<-Core1||Core2->")
         time.sleep(3)
         while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
             time.sleep(1)
-        if wiringpi2.digitalRead(6) == 0:
-            ScreenOutput("Restart Script1", "Please Wait...")
-            time.sleep(3)
-            os.system("python " + script_folder + "/execute_test_final_doble_host1.py > /dev/null 2>&1 &")
-        elif wiringpi2.digitalRead(5) == 0:
-            ScreenOutput("Restart Script2", "Please Wait...")
-            time.sleep(3)
-            os.system("python " + script_folder + "/execute_test_final_doble_host2.py > /dev/null 2>&1 &")
+        if wiringpi2.digitalRead(5) == 0:
+			ScreenOutput("Restart Script1", "Please Wait...")
+			time.sleep(3)
+			os.system("python " + script_folder + "/execute_test_final_doble_host1.py > /dev/null 2>&1 &")
+        elif wiringpi2.digitalRead(6) == 0:
+			ScreenOutput("Restart Script2", "Please Wait...")
+			time.sleep(3)
+			os.system("python " + script_folder + "/execute_test_final_doble_host2.py > /dev/null 2>&1 &")
