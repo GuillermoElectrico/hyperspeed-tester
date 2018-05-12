@@ -15,7 +15,7 @@ from email.mime.multipart import MIMEMultipart
 # inserts it into the mySQL database, stores the log file in another directory
 # and removes the old file.
 
-log_files = "/home/pi"
+log_files = "/home/iperf"
 final_log_store = "/var/www/html/test-logs"
 
 #The single function that runs all
