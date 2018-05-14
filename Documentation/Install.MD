@@ -121,7 +121,7 @@ Of importance as well is the cron jobs that are run on the server. The required 
 ## IPerf Log Server Installation
 The IPerf log server is where things are a bit more tricky. This server store the logs for the tests along with the front-end interface to display them. For the server we have used a simple LAMP deployment (Apache, MySQL, PHP), however this can be changed. As such the installation guide for LAMP stack installation on Ubuntu should be followed here:
 
-* http://howtoubuntu.org/how-to-install-lamp-on-ubuntu
+* https://clouding.io/kb/como-instalar-en-linux-apache-mariadb-y-php-lamp/
 
 We also made use of a basic database structure consisting of just two tables to store all the data we need. We have the following two tables:
 
