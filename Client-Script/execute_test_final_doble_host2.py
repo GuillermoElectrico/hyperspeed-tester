@@ -128,10 +128,10 @@ def pingHome():
       time.sleep(3)
     return status
 
-##Function performs a test against the FTP socket to ensure the FTP service is accessible on the server
+##Function performs a test against the SCP socket to ensure the SCP service is accessible on the server
 def testSCPSocket() :
-    #check ftp is running on the host by established a socket on port 21. Set the timeout for the socket to 3 seconds
-    ScreenOutput('SFTP Test', 'Executing...')
+    #check SCP is running on the host by established a socket on port 21. Set the timeout for the socket to 3 seconds
+    ScreenOutput('SCP Test', 'Executing...')
     time.sleep(1)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(3)
@@ -141,15 +141,15 @@ def testSCPSocket() :
     sock.close()
     ##Check whether the socket could connect successfully
     if result == 0:
-        ScreenOutput('SFTP Test', 'Succesful')
+        ScreenOutput('SCP Test', 'Succesful')
         time.sleep(1)
         return True
     else:
-        ScreenOutput('SFTP Test', 'Unsuccessful')
+        ScreenOutput('SCP Test', 'Unsuccessful')
         time.sleep(3)
         ScreenOutput('Test Failed', 'Retrying...')
         time.sleep(1)
-        ##Rerun the test if the FTP socket fails
+        ##Rerun the test if the SCP socket fails
         executeTesting()
         return False
 
