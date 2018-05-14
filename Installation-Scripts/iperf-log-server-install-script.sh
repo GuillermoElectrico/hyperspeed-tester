@@ -3,7 +3,7 @@ sleep 2
 apt-get update
 echo *******Installing dependencies MySQL-python*******
 sleep 2
-apt install libmysqlclient-dev
+apt install libmysqlclient-dev libmariadbclient-dev
 echo *******Installing PIP for Flask Installation*******
 sleep 2
 apt-get install python-pip -y
