@@ -151,7 +151,7 @@ CREATE TABLE `test_logs_upload`(
   `gateway_mac` VARCHAR(255) DEFAULT NULL,
   `gateway_ip` VARCHAR(255) NOT NULL,
   `peak_mbps` VARCHAR(255) NOT NULL,
-  `ookla_send` VARCHAR(255) NOT NULL,
+  `ookla_send` VARCHAR(255) NOT NULL
 );
 ```
 
