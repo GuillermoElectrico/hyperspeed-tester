@@ -100,11 +100,14 @@ while (1 == 1):
                 time.sleep(3)
         else:
             subprocess.call([script_folder + "/button_shell_script_doble_host.sh"])
-            board_mac = get_mac() 
-            IPAddr = netifaces.ifaddresses('eth0')[netifaces.AF_INET][0]['addr'] 
-            formatted_board_mac = str(''.join(("%012X" % board_mac)[i:i+2] for i in range(0, 12, 2)))
-			#firstpart, secondpart = formatted_board_mac[:len(formatted_board_mac)/2], formatted_board_mac[len(formatted_board_mac)/2:]
-            ScreenOutput(formatted_board_mac, str(IPAddr))
+            try:
+                board_mac = get_mac() 
+                IPAddr = netifaces.ifaddresses('eth0')[netifaces.AF_INET][0]['addr'] 
+                formatted_board_mac = str(''.join(("%012X" % board_mac)[i:i+2] for i in range(0, 12, 2)))
+                #firstpart, secondpart = formatted_board_mac[:len(formatted_board_mac)/2], formatted_board_mac[len(formatted_board_mac)/2:]
+                ScreenOutput(formatted_board_mac, str(IPAddr))
+            except:
+                ScreenOutput("Not Ethernet", "Connect cable")
             time.sleep(5)
             while (wiringpi2.digitalRead(6) == 1 and wiringpi2.digitalRead(5) == 1):
                 time.sleep(1)
