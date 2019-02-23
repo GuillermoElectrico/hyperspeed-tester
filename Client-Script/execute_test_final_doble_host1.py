@@ -482,7 +482,6 @@ def executeTesting():
 		#Led1
         wiringpi2.digitalWrite(LED1,1)
         ##Check whether there is connectivity to the FTP port
-        #testFtpSocket()
         testSCPSocket()
 		#Led2
         wiringpi2.digitalWrite(LED2,1)
