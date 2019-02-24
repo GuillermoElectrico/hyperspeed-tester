@@ -123,3 +123,4 @@ while (1 == 1):
 			ScreenOutput("Restart Script2", "Please Wait...")
 			time.sleep(3)
 			os.system("python " + script_folder + "/execute_test_final_doble_host2.py > /dev/null 2>&1 &")
+    time.sleep(1)
