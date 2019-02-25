@@ -32,6 +32,7 @@ scppass = "password"
 hostweb = "X.X.X.X"
 
 ## Seedtest Ookla
+OoklatTest = False
 servers = []
 # If you want to test against a specific server
 # servers = [1234]
@@ -267,22 +268,23 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
         cpe_ip = "Unknown"
 
     ##Perform an Ookla Speedtest with a 60 second timeout
-    ookla_results = {}
-    ookla_test = True
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(60)
-    try:
-        ookla_results = perform_ookla_test()
-    except Exception as ex:
-        ookla_test = False
-        if "timed_out" in ex:
-            ookla_upload = "---"
-            ookla_download = "---"
-        else:
-            ookla_upload = "---"
-            ookla_download = "---"
-    finally:
-        signal.alarm(0)
+    if OoklatTest == True :
+        ookla_results = {}
+        ookla_test = True
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(60)
+        try:
+            ookla_results = perform_ookla_test()
+        except Exception as ex:
+            ookla_test = False
+            if "timed_out" in ex:
+                ookla_upload = "---"
+                ookla_download = "---"
+            else:
+                ookla_upload = "---"
+                ookla_download = "---"
+        finally:
+            signal.alarm(0)
      
     ##Obtain the MAC address of the board
     board_mac = get_mac()
@@ -300,7 +302,10 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
     json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip, "CPE_ip": cpe_ip}
-    json_file_contents["end"]["ookla_test"] = {"ookla": ookla_upload}
+    if OoklatTest == True :
+        json_file_contents["end"]["ookla_test"] = {"ookla": ookla_upload}
+    else :
+        json_file_contents["end"]["ookla_test"] = {"ookla": "---"}
 	##Add file contents direction test
     json_file_contents["end"]["test_information"] = {"direction": "up"} 
     
@@ -317,7 +322,10 @@ def edit_json(hashed_file_name, gateway_mac, gateway_ip) :
     json_file_contents = json.loads(file_contents)
     ##Add the new JSON values onto the end, the boards MAC address, the file hash, and the gateway MAC
     json_file_contents["end"]["host_information"] = {"mac_address": formatted_board_mac, "hash": hashed_file_name, "gateway_mac": gateway_mac, "gateway_ip": gateway_ip, "CPE_ip": cpe_ip}
-    json_file_contents["end"]["ookla_test"] = {"ookla": ookla_download}
+    if OoklatTest == True :
+        json_file_contents["end"]["ookla_test"] = {"ookla": ookla_download}
+    else :
+        json_file_contents["end"]["ookla_test"] = {"ookla": "---"}
 	##Add file contents direction test
     json_file_contents["end"]["test_information"] = {"direction": "down"} 
     
@@ -482,7 +490,6 @@ def executeTesting():
 		#Led1
         wiringpi2.digitalWrite(LED1,1)
         ##Check whether there is connectivity to the FTP port
-        #testFtpSocket()
         testSCPSocket()
 		#Led2
         wiringpi2.digitalWrite(LED2,1)
@@ -506,7 +513,6 @@ def executeTesting():
 		#Led6
         wiringpi2.digitalWrite(LED6,1)
         ##Call the function that will copy the test file specified by the hash to the IPerf Server
-        #copyftpfiles(hash_file)
         copySCPfiles(hash_file)
 		#Led7
         wiringpi2.digitalWrite(LED7,1)
